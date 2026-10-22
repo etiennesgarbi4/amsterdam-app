@@ -5,6 +5,9 @@
   // Indirizzo del Firebase Realtime Database delle spese (es. https://nome-default-rtdb.firebaseio.com). Vuoto = spese solo su questo telefono.
   const SYNC_URL = 'https://amsterdam-spese-default-rtdb.europe-west1.firebasedatabase.app';
 
+  const DEFAULT_PEOPLE = 'Etienne, Fabiana, Checca, Irene';
+  const DEFAULT_TRIP = 'ams-098ca9ac';
+
   const HOTEL = { name: 'Acostar Hotel', lat: 52.3653, lon: 4.8858, q: 'Acostar Hotel Kerkstraat 45 Amsterdam' };
 
   const FAMOUS = [
@@ -165,15 +168,23 @@
     if (!S.people.length) {
       box.innerHTML = '<div class="t-card"><div class="t-title">Prepariamo le spese</div>' +
         '<div class="t-note">Scrivi i nomi di chi viaggia, separati da virgola. Poi scegli chi sei tu su questo telefono.</div>' +
-        '<label class="t-label">NOMI</label><input class="t-input" id="sp-names" placeholder="Etienne, Luca, Flavio">' +
-        '<label class="t-label">CODICE VIAGGIO (uguale su tutti i telefoni)</label><input class="t-input" id="sp-code" placeholder="lo stesso su tutti i telefoni" value="' + esc(S.code || 'ams-' + Math.random().toString(36).slice(2, 10)) + '">' +
+        '<label class="t-label">NOMI</label><input class="t-input" id="sp-names" value="' + esc(DEFAULT_PEOPLE) + '">' +
+        '<label class="t-label">TU CHI SEI?</label><select class="t-select" id="sp-me0"></select>' +
+        '<label class="t-label">CODICE VIAGGIO (uguale su tutti i telefoni)</label><input class="t-input" id="sp-code" value="' + esc(S.code || DEFAULT_TRIP) + '">' +
         '<div class="t-gap"><button class="t-btn yellow" id="sp-start">Inizia</button></div></div>';
+      const fillMe = () => {
+        const list = $('#sp-names').value.split(',').map((x) => x.trim()).filter(Boolean);
+        const cur = $('#sp-me0').value;
+        $('#sp-me0').innerHTML = list.map((p) => '<option' + (p === cur ? ' selected' : '') + '>' + esc(p) + '</option>').join('');
+      };
+      fillMe();
+      $('#sp-names').addEventListener('input', fillMe);
       $('#sp-start').addEventListener('click', () => {
         const names = $('#sp-names').value.split(',').map((x) => x.trim()).filter(Boolean);
         if (names.length < 1) return;
-        S.code = $('#sp-code').value.trim().replace(/[.$#\[\]\/]/g, '-') || ('ams-' + Math.random().toString(36).slice(2, 10));
+        S.code = $('#sp-code').value.trim().replace(/[.$#\[\]\/]/g, '-') || DEFAULT_TRIP;
         S.records.push({ id: 'people', t: 'p', names, ts: Date.now(), synced: false });
-        S.people = names; S.me = S.me || names[0];
+        S.people = names; S.me = names.includes($('#sp-me0').value) ? $('#sp-me0').value : names[0];
         saveS(); renderSpese(); syncSpese();
       });
       return;
