@@ -261,7 +261,16 @@
 
   function liveExpenses() {
     const dead = new Set(S.records.filter((r) => r.t === 'd').map((r) => r.target));
-    return S.records.filter((r) => r.t === 'e' && !dead.has(r.id)).sort((a, b) => b.ts - a.ts);
+    const closed = new Set(); closures().forEach((c) => (c.ids || []).forEach((i) => closed.add(i)));
+    return S.records.filter((r) => r.t === 'e' && !dead.has(r.id) && !closed.has(r.id)).sort((a, b) => b.ts - a.ts);
+  }
+  // chiusure dei conti: ogni record 'c' elenca le spese chiuse e il risultato di quel momento
+  function closures() {
+    return S.records.filter((r) => r.t === 'c').sort((a, b) => b.ts - a.ts);
+  }
+  function closedExpenses(c) {
+    const ids = new Set(c.ids || []), dead = new Set(S.records.filter((r) => r.t === 'd').map((r) => r.target));
+    return S.records.filter((r) => r.t === 'e' && ids.has(r.id) && !dead.has(r.id)).sort((a, b) => b.ts - a.ts);
   }
   function peopleRecord() {
     return S.records.filter((r) => r.t === 'p').sort((a, b) => b.ts - a.ts)[0];
@@ -275,6 +284,31 @@
     const base = Math.floor(amount / who.length); let rest = amount - base * who.length;
     const o = {}; who.forEach((w) => { o[w] = base + (rest-- > 0 ? 1 : 0); });
     return o;
+  }
+
+  function calcConti(ex) {
+    const paid = {}, share = {};
+    S.people.forEach((p) => { paid[p] = 0; share[p] = 0; });
+    let total = 0;
+    ex.forEach((e) => {
+      total += e.amount;
+      if (paid[e.payer] != null) paid[e.payer] += e.amount;
+      const sh = splitShares(e.amount, e.who.length ? e.who : S.people);
+      Object.keys(sh).forEach((p) => { if (share[p] != null) share[p] += sh[p]; });
+    });
+    const net = S.people.map((p) => ({ p, v: paid[p] - share[p] }));
+    const cred = net.filter((x) => x.v > 0).map((x) => ({ ...x })).sort((a, b) => b.v - a.v);
+    const deb = net.filter((x) => x.v < 0).map((x) => ({ p: x.p, v: -x.v })).sort((a, b) => b.v - a.v);
+    const settle = [];
+    let i = 0, j = 0;
+    while (i < deb.length && j < cred.length) {
+      const m = Math.min(deb[i].v, cred[j].v);
+      if (m > 0) settle.push(deb[i].p + ' deve ' + eur(m) + ' a ' + cred[j].p);
+      deb[i].v -= m; cred[j].v -= m;
+      if (deb[i].v <= 0) i++;
+      if (cred[j].v <= 0) j++;
+    }
+    return { total, net, settle };
   }
 
   function renderSpese() {
@@ -306,31 +340,12 @@
     }
     if (!S.me || !S.people.includes(S.me)) S.me = S.people[0];
     const ex = liveExpenses();
-    const paid = {}, share = {};
-    S.people.forEach((p) => { paid[p] = 0; share[p] = 0; });
-    let total = 0;
-    ex.forEach((e) => {
-      total += e.amount;
-      if (paid[e.payer] != null) paid[e.payer] += e.amount;
-      const sh = splitShares(e.amount, e.who.length ? e.who : S.people);
-      Object.keys(sh).forEach((p) => { if (share[p] != null) share[p] += sh[p]; });
-    });
-    const net = S.people.map((p) => ({ p, v: paid[p] - share[p] }));
-    const cred = net.filter((x) => x.v > 0).map((x) => ({ ...x })).sort((a, b) => b.v - a.v);
-    const deb = net.filter((x) => x.v < 0).map((x) => ({ p: x.p, v: -x.v })).sort((a, b) => b.v - a.v);
-    const settle = [];
-    let i = 0, j = 0;
-    while (i < deb.length && j < cred.length) {
-      const m = Math.min(deb[i].v, cred[j].v);
-      if (m > 0) settle.push(deb[i].p + ' deve ' + eur(m) + ' a ' + cred[j].p);
-      deb[i].v -= m; cred[j].v -= m;
-      if (deb[i].v <= 0) i++;
-      if (cred[j].v <= 0) j++;
-    }
-
+    const { total, net, settle } = calcConti(ex);
+    const closed = closures();
+    const closedTotal = closed.reduce((t, c) => t + (c.total || 0), 0);
     const statusTxt = { off: 'Solo su questo telefono', ok: 'Sincronizzato con gli altri', err: 'Non riesco a sincronizzare, riprovo' }[syncState];
     box.innerHTML =
-      '<div class="t-card"><div class="t-row" style="justify-content:space-between"><div><div class="t-note small">TOTALE SPESO</div><div class="t-title" style="font-size:24px">' + eur(total) + '</div></div>' +
+      '<div class="t-card"><div class="t-row" style="justify-content:space-between"><div><div class="t-note small">' + (closed.length ? 'DA SALDARE' : 'TOTALE SPESO') + '</div><div class="t-title" style="font-size:24px">' + eur(total) + '</div>' + (closed.length ? '<div class="t-note small">Totale del viaggio ' + eur(total + closedTotal) + '</div>' : '') + '</div>' +
       '<div class="t-note small"><span class="sync-dot ' + (syncState === 'ok' ? 'ok' : syncState === 'err' ? 'err' : '') + '"></span>' + statusTxt + '</div></div></div>' +
 
       '<div class="t-card"><div class="t-title">Aggiungi una spesa</div>' +
@@ -343,12 +358,18 @@
 
       '<div class="t-card"><div class="t-title">Chi deve a chi</div>' +
       (settle.length ? settle.map((s) => '<div class="settle">' + esc(s) + '</div>').join('') : '<div class="t-note">Per ora siete pari.</div>') +
-      '<div class="t-gap">' + net.map((x) => '<div class="balance"><span>' + esc(x.p) + '</span><span class="' + (x.v >= 0 ? 'pos' : 'neg') + '">' + (x.v >= 0 ? '+' : '') + eur(x.v) + '</span></div>').join('') + '</div></div>' +
+      '<div class="t-gap">' + net.map((x) => '<div class="balance"><span>' + esc(x.p) + '</span><span class="' + (x.v >= 0 ? 'pos' : 'neg') + '">' + (x.v >= 0 ? '+' : '') + eur(x.v) + '</span></div>').join('') + '</div>' +
+      (S.me === ADMIN && ex.length ? '<div class="t-gap"><button class="t-btn ghost small" id="sp-close">Chiudi i conti</button><div class="t-note small t-gap">Le spese qui sopra vanno nello storico e i saldi ripartono da zero.</div></div>' : '') + '</div>' +
 
       '<div class="t-card"><div class="t-title">Spese registrate (' + ex.length + ')</div>' +
       (ex.length ? ex.map((e) => '<div class="exp"><div class="place-ic">' + (CAT_IC[e.cat] || '🧾') + '</div><div class="exp-body"><div class="exp-desc">' + esc(e.desc || e.cat) + '</div><div class="exp-sub">' +
         esc(e.payer) + ' ha pagato · ' + new Date(e.ts).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' · tra ' + e.who.length +
         '</div></div><div class="exp-amt">' + eur(e.amount) + '</div>' + (S.me === ADMIN ? '<button class="x-btn" data-del="' + e.id + '" aria-label="Elimina">✕</button>' : '') + '</div>').join('') : '<div class="t-note">Nessuna spesa ancora.</div>') + '</div>' +
+
+      (closed.length ? '<div class="t-card"><div class="t-title">Storico (' + closed.length + (closed.length === 1 ? ' chiusura' : ' chiusure') + ')</div>' +
+        closed.map((c) => '<details class="t-gap"><summary><b>' + new Date(c.ts).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + '</b> · ' + eur(c.total || 0) + '</summary>' +
+          (c.settle && c.settle.length ? c.settle.map((x) => '<div class="settle">' + esc(x) + '</div>').join('') : '<div class="t-note">Erano pari.</div>') +
+          closedExpenses(c).map((e) => '<div class="exp"><div class="place-ic">' + (CAT_IC[e.cat] || '🧾') + '</div><div class="exp-body"><div class="exp-desc">' + esc(e.desc || e.cat) + '</div><div class="exp-sub">' + esc(e.payer) + ' ha pagato · tra ' + e.who.length + '</div></div><div class="exp-amt">' + eur(e.amount) + '</div></div>').join('') + '</details>').join('') + '</div>' : '') +
 
       '<details class="t-card"><summary class="t-title">Impostazioni</summary>' +
       '<label class="t-label">SONO</label><select class="t-select" id="sp-me">' + S.people.map((p) => '<option' + (p === S.me ? ' selected' : '') + '>' + esc(p) + '</option>').join('') + '</select>' +
@@ -364,6 +385,12 @@
       if (!who.length) return;
       S.records.push({ id: newId(), t: 'e', amount, desc: $('#sp-desc').value.trim(), cat: $('#sp-cat').value, payer: $('#sp-payer').value, who, ts: Date.now(), synced: false });
       S.me = $('#sp-payer').value;
+      saveS(); renderSpese(); syncSpese();
+    });
+    const cb = $('#sp-close');
+    if (cb) cb.addEventListener('click', () => {
+      if (!confirm('Chiudere i conti? Le ' + ex.length + ' spese vanno nello storico e i saldi ripartono da zero.')) return;
+      S.records.push({ id: newId(), t: 'c', ts: Date.now(), ids: ex.map((e) => e.id), total, settle, synced: false });
       saveS(); renderSpese(); syncSpese();
     });
     $$('[data-del]').forEach((b) => b.addEventListener('click', () => {
