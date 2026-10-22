@@ -1,0 +1,1532 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Amsterdam · Ottobre 2026</title>
+<meta name="theme-color" content="#12272A">
+<meta name="description" content="Itinerario di Amsterdam, 30 ottobre - 3 novembre 2026">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Amsterdam">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="tools.css">
+<link rel="stylesheet" href="itin.css">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
+
+:root {
+  --sg: #12272A;
+  --dg: #353C4C;
+  --yellow: #F5C374;
+  --ice: #C9DBDB;
+  --white: #FFFFFF;
+  --bg: #F0F4F4;
+  --surface: #FFFFFF;
+  --surface2: #E8EEEE;
+  --border: rgba(18,39,42,0.10);
+  --text: #12272A;
+  --text2: #4a6165;
+  --text3: #7a9598;
+  --radius: 16px;
+  --shadow: 0 2px 12px rgba(18,39,42,0.08);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b1a1d;
+    --surface: #13272b;
+    --surface2: #1a3338;
+    --border: rgba(201,219,219,0.10);
+    --text: #e0eeee;
+    --text2: #8ab5b8;
+    --text3: #5a8a8d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b1a1d;
+  --surface: #13272b;
+  --surface2: #1a3338;
+  --border: rgba(201,219,219,0.10);
+  --text: #e0eeee;
+  --text2: #8ab5b8;
+  --text3: #5a8a8d;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  font-family: 'Hanken Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100%;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 72px);
+  -webkit-font-smoothing: antialiased;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 200;
+  background: var(--sg);
+}
+
+/* ── HEADER ── */
+.app-header {
+  background: var(--sg);
+  padding: 18px 20px 20px;
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 100;
+}
+.app-header-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.app-title {
+  font-family: 'Anton', sans-serif;
+  font-size: 28px;
+  color: var(--white);
+  letter-spacing: 1.5px;
+  line-height: 1;
+}
+.app-dates {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--yellow);
+  letter-spacing: 0.5px;
+  margin-top: 4px;
+}
+.header-badge {
+  background: var(--yellow);
+  color: var(--sg);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.3px;
+}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: var(--surface);
+  border-top: 1px solid var(--border);
+  display: flex;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(18,39,42,0.08);
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 4px 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Hanken Grotesk', sans-serif;
+  color: var(--text3);
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-btn.active { color: var(--sg); }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .nav-btn.active { color: var(--yellow); }
+}
+:root[data-theme="dark"] .nav-btn.active { color: var(--yellow); }
+.nav-icon { font-size: 20px; line-height: 1; }
+.nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.2px; }
+
+/* ── CONTENT ── */
+.screen { display: none; padding: 0 16px 16px; max-width: 540px; margin: 0 auto; }
+.screen.active { display: block; }
+
+/* ── DAY HERO ── */
+.day-hero {
+  background: var(--sg);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 16px 0 12px;
+  position: relative;
+  overflow: hidden;
+}
+.day-hero::before {
+  content: attr(data-emoji);
+  position: absolute;
+  right: -10px; top: -10px;
+  font-size: 80px;
+  opacity: 0.12;
+  line-height: 1;
+}
+.day-hero-date {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--yellow);
+  margin-bottom: 6px;
+}
+.day-hero-title {
+  font-family: 'Anton', sans-serif;
+  font-size: 26px;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: 0.5px;
+}
+.day-hero-sub {
+  font-size: 13px;
+  color: rgba(201,219,219,0.7);
+  margin-top: 6px;
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ── SECTION LABEL ── */
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin: 20px 0 10px 2px;
+}
+
+/* ── TAPPA CARD ── */
+.tappa {
+  background: var(--surface);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.tappa-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.tappa-icon-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.tappa-icon {
+  width: 40px; height: 40px;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.ic-default { background: var(--surface2); }
+.ic-coffee { background: rgba(245,195,116,0.15); }
+.ic-food { background: rgba(100,180,120,0.12); }
+.ic-must { background: rgba(18,39,42,0.08); }
+.ic-transport { background: rgba(53,60,76,0.08); }
+.ic-night { background: rgba(80,60,120,0.10); }
+
+.tappa-time {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text3);
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+
+.tappa-content { flex: 1; min-width: 0; }
+.tappa-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.tag-coffee { background: rgba(245,195,116,0.2); color: #8a5c00; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tag-coffee { background: rgba(245,195,116,0.15); color: var(--yellow); }
+}
+:root[data-theme="dark"] .tag-coffee { background: rgba(245,195,116,0.15); color: var(--yellow); }
+.tag-book { background: rgba(220,60,60,0.1); color: #8a1a1a; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tag-book { background: rgba(220,60,60,0.15); color: #f08080; }
+}
+:root[data-theme="dark"] .tag-book { background: rgba(220,60,60,0.15); color: #f08080; }
+.tag-free { background: rgba(18,39,42,0.07); color: var(--text2); }
+.tag-food { background: rgba(80,160,100,0.12); color: #2a6a3a; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .tag-food { background: rgba(80,160,100,0.15); color: #80c890; }
+}
+:root[data-theme="dark"] .tag-food { background: rgba(80,160,100,0.15); color: #80c890; }
+
+.tappa-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.tappa-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.55;
+}
+.tappa-desc strong { color: var(--text); font-weight: 600; }
+.tappa-desc em { font-style: italic; color: var(--text3); }
+
+/* ── QUARTIERE CARD ── */
+.quartiere {
+  background: var(--surface);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 10px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+.quartiere-header {
+  background: var(--sg);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.quartiere-emoji { font-size: 22px; }
+.quartiere-title {
+  font-family: 'Anton', sans-serif;
+  font-size: 18px;
+  color: var(--white);
+  letter-spacing: 0.5px;
+}
+.quartiere-sub {
+  font-size: 12px;
+  color: var(--yellow);
+  font-weight: 500;
+  margin-top: 1px;
+}
+.quartiere-body { padding: 14px 16px; }
+.quartiere-desc {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+.highlights {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.highlight-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.highlight-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--yellow);
+  flex-shrink: 0;
+  margin-top: 5px;
+}
+.highlight-text {
+  font-size: 13px;
+  color: var(--text2);
+  line-height: 1.45;
+}
+.highlight-text strong { color: var(--text); font-weight: 600; }
+
+/* ── MAPS BUTTON ── */
+.maps-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+.btn-m {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: 'Hanken Grotesk', sans-serif;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-m:active { opacity: 0.7; }
+.btn-dark { background: var(--sg); color: var(--white); }
+.btn-yellow { background: var(--yellow); color: var(--sg); }
+.btn-outline { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+
+/* ── COFFEE SHOP LIST ── */
+.coffee-section { margin-bottom: 10px; }
+.coffee-zone-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin: 16px 0 8px 2px;
+}
+.coffee-card {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+.coffee-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.coffee-item:last-child { border-bottom: none; }
+.coffee-dot-wrap {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: rgba(245,195,116,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.coffee-info { flex: 1; min-width: 0; }
+.coffee-name { font-size: 14px; font-weight: 700; color: var(--text); }
+.coffee-desc { font-size: 12px; color: var(--text3); margin-top: 1px; }
+.coffee-star { color: var(--yellow); font-size: 12px; }
+
+/* ── INFO BOX ── */
+.info-box {
+  background: var(--surface);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+.info-box-header {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.info-box-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.info-box-body { padding: 0; }
+.info-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.info-row:last-child { border-bottom: none; }
+.info-row-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.info-row-content { flex: 1; }
+.info-row-label { font-size: 13px; font-weight: 700; color: var(--text); }
+.info-row-desc { font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
+.info-row-desc a { color: var(--sg); font-weight: 600; text-decoration: underline; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .info-row-desc a { color: var(--yellow); }
+}
+:root[data-theme="dark"] .info-row-desc a { color: var(--yellow); }
+
+/* ── PRENOTAZIONI ── */
+.pren-box {
+  background: rgba(60,150,90,0.07);
+  border: 1.5px solid rgba(60,150,90,0.25);
+  border-radius: var(--radius);
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.pren-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #2a6b43;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pren-title { color: #7fd3a0; }
+  :root:not([data-theme="light"]) .pren-box { background: rgba(60,150,90,0.10); border-color: rgba(60,150,90,0.30); }
+}
+:root[data-theme="dark"] .pren-title { color: #7fd3a0; }
+:root[data-theme="dark"] .pren-box { background: rgba(60,150,90,0.10); border-color: rgba(60,150,90,0.30); }
+.pren-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+.pren-item:last-child { margin-bottom: 0; }
+.pren-item-dot { color: #3c965a; margin-top: 1px; font-size: 10px; }
+.pren-item a { font-weight: 700; color: #2a6b43; text-decoration: underline; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .pren-item a { color: #f08080; }
+}
+:root[data-theme="dark"] .pren-item a { color: #f08080; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 4px 0 16px; }
+
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <div class="app-header-inner">
+    <div>
+      <div class="app-title">AMSTERDAM 🇳🇱</div>
+      <div class="app-dates">30 ottobre – 3 novembre 2026</div>
+    </div>
+    <div class="header-badge">5 giorni</div>
+  </div>
+</header>
+
+<!-- ══════════════ VENERDÌ ══════════════ -->
+<div class="screen active" id="s0">
+  <div class="day-hero" data-emoji="✈️">
+    <div class="day-hero-date">Venerdì 30 ottobre</div>
+    <div class="day-hero-title">Arrivo ed esplorazione</div>
+    <div class="day-hero-sub">Mercato, Heineken e prima serata</div>
+  </div>
+
+  <div class="section-label">Mattina</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-transport">✈️</div>
+        <span class="tappa-time">9:00</span>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Atterraggio a Schiphol</div>
+        <div class="tappa-desc">Sbarco e ritiro bagagli. Poi vai a <strong>Schiphol Plaza</strong>, esci e gira leggermente a destra: <strong>fermata B17</strong>, bus rosso 397. Ogni 7-8 min, costa €6,50 con carta contactless. Scendi a <strong>Leidseplein</strong> (~30 min).</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Schiphol+Airport+Bus+Stop+B17+Amsterdam" target="_blank">📍 Fermata B17</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-default">🏨</div>
+        <span class="tappa-time">10:00</span>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Acostar Hotel – deposito bagagli</div>
+        <div class="tappa-desc">Kerkstraat 45-49 · da Leidseplein 5-7 min a piedi. Lascia i bagagli e parti leggero.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Acostar+Hotel+Kerkstraat+45+Amsterdam" target="_blank">📍 Hotel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-default">🌸</div>
+        <span class="tappa-time">10:45</span>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Canali Kerkstraat + Bloemenmarkt</div>
+        <div class="tappa-desc">Prima passeggiata lungo i canali attorno all'hotel. Il <strong>Bloemenmarkt</strong> è il mercato galleggiante dei fiori sul Singel: bulbi di tulipano, souvenir, colori intensi. Solo 5 minuti dall'hotel.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Bloemenmarkt+Singel+Amsterdam" target="_blank">📍 Bloemenmarkt</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-coffee">🌿</div>
+        <span class="tappa-time">12:00</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-coffee">☁️ Coffee</span>
+        <div class="tappa-name">Boerejongens</div>
+        <div class="tappa-desc">Utrechtsestraat · 5 minuti dall'hotel. Uno dei migliori di Amsterdam: selezione premium, personale preparatissimo, atmosfera da boutique di lusso. Aperto dalle 7:00.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Boerejongens+Utrechtsestraat+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Pomeriggio – De Pijp</div>
+
+  <div class="quartiere">
+    <div class="quartiere-header">
+      <span class="quartiere-emoji">🛒</span>
+      <div>
+        <div class="quartiere-title">DE PIJP</div>
+        <div class="quartiere-sub">Il quartiere più vivace di Amsterdam</div>
+      </div>
+    </div>
+    <div class="quartiere-body">
+      <div class="quartiere-desc">De Pijp è il quartiere più multiculturale e autentico della città. Niente musei, niente turisti da cartolina: solo strade animate, mercati rumorosi, bar con tavoli fuori. Lo vivi meglio camminando senza meta.</div>
+      <div class="highlights">
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Albert Cuyp Markt</strong>: il mercato di strada più grande d'Olanda. Mangia camminando: stroopwafel appena fatti, aringa cruda, poffertjes, formaggi, friet con maionese. Aperto fino alle 17:00.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Ferdinand Bolstraat</strong>: l'asse principale del quartiere, piena di negozi locali, caffetterie e vita di quartiere vera.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Sarphatipark</strong>: il piccolo parco al centro del De Pijp, ottimo per sedersi e godersi il quartiere dopo il mercato.</div>
+        </div>
+      </div>
+      <div class="maps-row">
+        <a class="btn-m btn-dark" href="https://maps.google.com/?q=Albert+Cuyp+Markt+Amsterdam" target="_blank">📍 Albert Cuyp</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=De+Pijp+Amsterdam" target="_blank">📍 De Pijp</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Ferdinand+Bolstraat+Amsterdam" target="_blank">📍 Ferdinand Bolstraat</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Sarphatipark+Amsterdam" target="_blank">📍 Sarphatipark</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-must">🍺</div>
+        <span class="tappa-time">16:00</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-book">🔖 Prenotato</span>
+        <div class="tappa-name">Heineken Experience</div>
+        <div class="tappa-desc">~1,5h. Il percorso immersivo nello storico birrificio originale: storia del marchio, processo di produzione, degustazione. <strong>2 birre incluse nel biglietto €23.</strong> Slot già prenotato per le 16:00/16:30.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Heineken+Experience+Amsterdam+Stadhouderskade" target="_blank">📍 Apri Maps</a>
+          <a class="btn-m btn-yellow" href="https://www.heinekenexperience.com" target="_blank">🎟 Sito ufficiale</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Sera</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-default">🏨</div>
+        <span class="tappa-time">19:00</span>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Check-in e riposo</div>
+        <div class="tappa-desc">Domani si inizia presto. Hai camminato con la valigia dopo una sveglia alle 3: <em>riposa senza sensi di colpa.</em></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ SABATO ══════════════ -->
+<div class="screen hidden" id="s1">
+  <div class="day-hero" data-emoji="🎃">
+    <div class="day-hero-date">Sabato 31 ottobre · Halloween</div>
+    <div class="day-hero-title">Musei, canali e notte di Halloween</div>
+    <div class="day-hero-sub">Van Gogh · Moco · SmokeBoat · Rembrandtplein</div>
+  </div>
+
+  <div class="section-label">Mattina</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-must">🎨</div>
+        <span class="tappa-time">10:00</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-book">🔖 Prenotato · slot 10:00</span>
+        <div class="tappa-name">Van Gogh Museum</div>
+        <div class="tappa-desc">~2,5/3h. La collezione più grande al mondo di Van Gogh: <strong>I Girasoli, I Mangiatori di Patate, Mandorlo in Fiore, La Camera da Letto</strong>. 4 piani, sale cronologiche che seguono l'evoluzione dell'artista dalla Olanda alla Provenza. Il sabato mattina può essere affollato: arriva qualche minuto prima dello slot. <strong>€25 · vangoghmuseum.nl</strong></div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Van+Gogh+Museum+Amsterdam+Museumplein" target="_blank">📍 Apri Maps</a>
+          <a class="btn-m btn-yellow" href="https://www.vangoghmuseum.nl" target="_blank">🎟 Sito ufficiale</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-food">🥪</div>
+        <span class="tappa-time">12:30</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-food">🍴 Cibo</span>
+        <div class="tappa-name">Albert Heijn – Van Baerlestraat 33</div>
+        <div class="tappa-desc">A 3 minuti a piedi dal Van Gogh. Panini freschi, insalate, piatti pronti: pranzo veloce ed economico prima del Moco. La catena di supermercati più amata dagli olandesi.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Albert+Heijn+Van+Baerlestraat+33+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-must">🖼️</div>
+        <span class="tappa-time">14:00</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-book">🔖 Prenotato · slot 14:00</span>
+        <div class="tappa-name">Moco Museum</div>
+        <div class="tappa-desc">~1,5h. A 2 minuti dal Van Gogh. <strong>Banksy, Andy Warhol, Jean-Michel Basquiat, Keith Haring, Yayoi Kusama.</strong> Uno dei musei più fotografati di Amsterdam: ogni sala è pensata per essere vissuta oltre che vista. <strong>mocomuseum.com</strong></div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Moco+Museum+Amsterdam+Honthorststraat" target="_blank">📍 Apri Maps</a>
+          <a class="btn-m btn-yellow" href="https://www.mocomuseum.com" target="_blank">🎟 Sito ufficiale</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Pomeriggio</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-coffee">🌿</div>
+        <span class="tappa-time">15:30</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-coffee">☁️ Coffee – di strada</span>
+        <div class="tappa-name">Abraxas</div>
+        <div class="tappa-desc">Jonge Roelensteeg · a piedi dal Moco verso Centraal, è sulla strada. <strong>Compra l'erba qui</strong> prima di salire sulla SmokeBoat. Buona selezione, atmosfera rilassata.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Abraxas+Coffeeshop+Jonge+Roelensteeg+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-must">🚤</div>
+        <span class="tappa-time">16:30</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-book">🔖 Prenotato · slot 16:30</span>
+        <div class="tappa-name">SmokeBoat</div>
+        <div class="tappa-desc">~1h. Crociera privata sui canali con cannabis legale a bordo. Parti con ancora un po' di luce e finisci sui canali illuminati al tramonto. <strong>NO tabacco. €22 a testa · smokeboat.com</strong></div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Amsterdam+Centraal+Station" target="_blank">📍 Centraal</a>
+          <a class="btn-m btn-yellow" href="https://www.smokeboat.com" target="_blank">🎟 Sito ufficiale</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Notte – Halloween 🎃</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-coffee">🌿</div>
+        <span class="tappa-time">17:30</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-coffee">☁️ Coffee</span>
+        <div class="tappa-name">Dampkring</div>
+        <div class="tappa-desc">Jordaan. Uno dei più amati dai locali, con un'atmosfera calda e raccolta. Curioso: in questo locale hanno girato una scena di Ocean's Twelve.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Dampkring+coffeeshop+Amsterdam+Jordaan" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-night">🎃</div>
+        <span class="tappa-time">notte</span>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Halloween a Rembrandtplein</div>
+        <div class="tappa-desc">La piazza della movida di Amsterdam. La notte di Halloween è una delle serate più festose dell'anno: locali a tema, gente in costume, bar aperti fino alle 3-4. <em>Fino a quando reggete.</em></div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Rembrandtplein+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ DOMENICA ══════════════ -->
+<div class="screen hidden" id="s2">
+  <div class="day-hero" data-emoji="🌿">
+    <div class="day-hero-date">Domenica 1 novembre</div>
+    <div class="day-hero-title">Canali, parco e Red Light</div>
+    <div class="day-hero-sub">Jordaan · Vondelpark · Red Light District</div>
+  </div>
+
+  <div class="section-label">Mattina – Jordaan</div>
+
+  <div class="quartiere">
+    <div class="quartiere-header">
+      <span class="quartiere-emoji">🏘️</span>
+      <div>
+        <div class="quartiere-title">JORDAAN</div>
+        <div class="quartiere-sub">Il quartiere più bello di Amsterdam</div>
+      </div>
+    </div>
+    <div class="quartiere-body">
+      <div class="quartiere-desc">Il Jordaan era il quartiere degli artigiani e degli immigrati nel XVII secolo. Oggi è il posto più desiderato dove vivere ad Amsterdam: canali stretti, case alte e inclinate, cortili nascosti, botteghe. Non si visita, si abita per qualche ora.</div>
+      <div class="highlights">
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Prinsengracht</strong>: uno dei quattro canali principali, quello più scenografico. Cammina lungo le rive e guardati intorno: case galleggianti, alberi che si specchiano nell'acqua, ponti stretti.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>De 9 Straatjes</strong> (le 9 Stradine): nove stradine trasversali tra i canali, piene di boutique indipendenti, negozi vintage e caffetterie. È la zona più instagrammata del Jordaan.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Torensluis</strong>: il ponte più antico e largo di Amsterdam, sul Singel (1648). Sotto ci sono ancora le vecchie prigioni murate. Vale uno sguardo ravvicinato.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Hofjes</strong>: i cortili interni nascosti dietro i portoni. Zon's Hofje e Karthuizerhof sono i più belli e pochissimi turisti li trovano. Spingi qualche portone.</div>
+        </div>
+      </div>
+      <div class="maps-row">
+        <a class="btn-m btn-dark" href="https://maps.google.com/?q=Jordaan+Amsterdam" target="_blank">📍 Jordaan</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=De+9+Straatjes+Amsterdam" target="_blank">📍 9 Straatjes</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Torensluis+bridge+Amsterdam" target="_blank">📍 Torensluis</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Prinsengracht+Amsterdam+Jordaan" target="_blank">📍 Prinsengracht</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-coffee">🌿</div>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-coffee">☁️ Coffee</span>
+        <div class="tappa-name">Paradox</div>
+        <div class="tappa-desc">Nel cuore del Jordaan. Uno dei coffee shop più autentici di Amsterdam, frequentato dai locali da decenni. Famoso per la <strong>space cake fatta in casa</strong>: se vuoi provarla, qui è la scelta giusta.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Paradox+coffeeshop+Jordaan+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-food">🍽️</div>
+        <span class="tappa-time">13:00</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-food">🍴 Cibo</span>
+        <div class="tappa-name">Pranzo in zona Jordaan</div>
+        <div class="tappa-desc">Tanti posti tra le 9 Straatjes e il Prinsengracht: caffetterie, bistrot, panini. La domenica sono quasi tutti aperti.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Pomeriggio – Vondelpark</div>
+
+  <div class="quartiere">
+    <div class="quartiere-header">
+      <span class="quartiere-emoji">🌳</span>
+      <div>
+        <div class="quartiere-title">VONDELPARK 🍄</div>
+        <div class="quartiere-sub">Il grande polmone verde di Amsterdam</div>
+      </div>
+    </div>
+    <div class="quartiere-body">
+      <div class="quartiere-desc">Il parco pubblico più amato di Amsterdam: 47 ettari di verde, laghetti, ponticelli, teatri all'aperto e caffetterie storiche. A qualsiasi ora e stagione c'è vita. Aperto 24h, sempre gratuito.</div>
+      <div class="highlights">
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Tartufi magici</strong>: prima volta → inizia con una dose bassa, aspetta 45 minuti prima di decidere se prenderne altri. Comprali prima al <strong>Conscious Dreams</strong> in Kerkstraat 117 (2 min dall'hotel). Il parco è il posto giusto: aperto, verde, nessuna pressione.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Blauwe Theehuis</strong>: il caffè a forma di piattino volante nel mezzo del parco. Iconico. Fermati per un tè o una birra.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Statua di Picasso</strong>: donata dal figlio di Picasso alla città. La trovi passeggiando, non devi cercarla.</div>
+        </div>
+      </div>
+      <div class="maps-row">
+        <a class="btn-m btn-dark" href="https://maps.google.com/?q=Vondelpark+Amsterdam" target="_blank">📍 Vondelpark</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Conscious+Dreams+smart+shop+Kerkstraat+117+Amsterdam" target="_blank">📍 Smart Shop</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Blauwe+Theehuis+Vondelpark+Amsterdam" target="_blank">📍 Blauwe Theehuis</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Picasso+sculpture+Vondelpark+Amsterdam" target="_blank">📍 Statua Picasso</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Sera – Red Light District</div>
+
+  <div class="quartiere">
+    <div class="quartiere-header">
+      <span class="quartiere-emoji">🔴</span>
+      <div>
+        <div class="quartiere-title">RED LIGHT DISTRICT</div>
+        <div class="quartiere-sub">De Wallen – il quartiere più antico di Amsterdam</div>
+      </div>
+    </div>
+    <div class="quartiere-body">
+      <div class="quartiere-desc">De Wallen è il cuore storico di Amsterdam: canali stretti, chiese medievali e luci rosse. Di sera è uno spettacolo visivo unico al mondo. Non è solo quello che pensi: ci sono chiese del '600, cortili silenziosi e la migliore concentrazione di coffee shop della città.</div>
+      <div class="highlights">
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Oudezijds Voorburgwal</strong>: il canale principale del quartiere. Di notte con i riflessi nell'acqua è uno degli scorci più belli di Amsterdam.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Tom & Jerry di Frankey</strong>: cerca sul muro in <strong>Koggestraat</strong>, davanti al magazzino T' Koggeschip. Naso all'insù, sono piccoli e nascosti in alto. Potrebbero non esserci più – qualcuno li porta via come souvenir.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Oude Kerk</strong>: la chiesa più antica di Amsterdam (1213) circondata dalle vetrine a luci rosse. Il contrasto è volutamente assurdo e bellissimo.</div>
+        </div>
+      </div>
+      <div class="maps-row">
+        <a class="btn-m btn-dark" href="https://maps.google.com/?q=Red+Light+District+Amsterdam+De+Wallen" target="_blank">📍 De Wallen</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Koggestraat+Amsterdam" target="_blank">📍 Tom & Jerry</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Oudezijds+Voorburgwal+Amsterdam" target="_blank">📍 Oudezijds Voorburgwal</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Oude+Kerk+Amsterdam" target="_blank">📍 Oude Kerk</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-coffee">🌿</div>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-coffee">☁️ Coffee</span>
+        <div class="tappa-name">The Bulldog + Green House</div>
+        <div class="tappa-desc"><strong>The Bulldog</strong>: il coffee shop più famoso al mondo, fondato nel 1975. Tappa storica obbligatoria. · <strong>Green House</strong> (Oudezijds Voorburgwal 191): stessa zona, qualità superiore, vince la Cannabis Cup ogni anno, terrazza sul canale. <em>Se dovete scegliere, andate al Green House.</em></div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=The+Bulldog+Amsterdam+Red+Light+District" target="_blank">📍 Bulldog</a>
+          <a class="btn-m btn-outline" href="https://maps.google.com/?q=Green+House+Oudezijds+Voorburgwal+191+Amsterdam" target="_blank">📍 Green House</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-coffee">🎤</div>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-coffee">☁️ Coffee · Snoop Dogg</span>
+        <div class="tappa-name">Tha Dogg House</div>
+        <div class="tappa-desc">Oudebrugsteeg 26 · il secondo coffee shop di Snoop Dogg ad Amsterdam, inaugurato nel 2026. Merch esclusivo Death Row Records, atmosfera West Coast. Imperdibile se sei fan.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Tha+Dogg+House+Oudebrugsteeg+26+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-night">🪑</div>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Café Hill Street Blues</div>
+        <div class="tappa-desc">Warmoesstraat 52A · bar smoke-friendly: porta quello che hai comprato e fumalo comodamente sulle poltrone con vista sul canale. Ottimo per chiudere la serata. Aperto fino all'1:00.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Hill+Street+Blues+Warmoesstraat+52+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ LUNEDÌ ══════════════ -->
+<div class="screen hidden" id="s3">
+  <div class="day-hero" data-emoji="🗼">
+    <div class="day-hero-date">Lunedì 2 novembre</div>
+    <div class="day-hero-title">Nord, centro storico e jazz</div>
+    <div class="day-hero-sub">A'DAM Lookout · Centro · Jazz Café Alto</div>
+  </div>
+
+  <div class="section-label">Mattina – Amsterdam Noord</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-must">🗼</div>
+        <span class="tappa-time">10:00</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-book">🔖 Prenotato · entrata libera 10:00-21:00</span>
+        <div class="tappa-name">A'DAM Lookout</div>
+        <div class="tappa-desc">Prendi il <strong>ferry gratuito</strong> da Amsterdam Centraal (5 min di traversata, già panoramica di per sé). L'A'DAM Lookout è in cima alla torre a Amsterdam Noord: vista a 360° sulla città, sui canali e sui polder olandesi. Biglietti già presi: <strong>Lookout €15,50</strong>, un <strong>drink €5</strong> e il <strong>VR Rollercoaster €7,50</strong>. <strong>Niente orario fisso</strong>: si entra quando vuoi, dalle 10:00 alle 21:00. L'altalena <strong>Over The Edge</strong>, che ti fa dondolare nel vuoto a 100 metri, non è nel biglietto: <strong>+€8,50</strong> al botteghino.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=ADAM+Lookout+Amsterdam+Noord" target="_blank">📍 A'DAM Lookout</a>
+          <a class="btn-m btn-outline" href="https://maps.google.com/?q=Amsterdam+Centraal+Ferry+Terminal" target="_blank">📍 Ferry Centraal</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-food">🍽️</div>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-food">🍴 Cibo</span>
+        <div class="tappa-name">Pranzo in zona Noord</div>
+        <div class="tappa-desc">Lungo il lungofiume IJ vicino all'A'DAM Tower ci sono bar e ristoranti con vista sull'acqua. Fermati qui prima di prendere il ferry di ritorno.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Pomeriggio – centro storico</div>
+
+  <div class="quartiere">
+    <div class="quartiere-header">
+      <span class="quartiere-emoji">🏛️</span>
+      <div>
+        <div class="quartiere-title">CENTRO STORICO</div>
+        <div class="quartiere-sub">Dam Square · Scorci nascosti · Ponti iconici</div>
+      </div>
+    </div>
+    <div class="quartiere-body">
+      <div class="quartiere-desc">Il cuore medievale di Amsterdam: tutto è raggiungibile a piedi in meno di mezz'ora. Giraci senza fretta – i migliori scorci si trovano svoltando per caso in un vicolo.</div>
+      <div class="highlights">
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Dam Square</strong>: la piazza centrale con il Palazzo Reale e il Monumento Nazionale. È il punto di partenza naturale per qualsiasi giro del centro.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Singel 7</strong>: la facciata più stretta di Amsterdam (a soli 2,5 metri). In realtà è solo la parte posteriore di una casa normale, ma l'effetto visivo è sorprendente. A 10 minuti da Dam.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Begijnhof</strong>: un cortile del '600 nascosto dietro un portone anonimo in pieno centro. Silenzio assoluto, case di legno medievali, una piccola chiesa. Ingresso gratuito. <em>Non fare rumore.</em></div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Reguliersgracht – i Sette Ponti</strong>: all'incrocio con l'Herengracht si vedono sette ponti ad arco perfettamente allineati. Uno degli scorci più fotografati di Amsterdam, bellissimo anche di sera.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Case danzanti sull'Amstel</strong> (Amstel 102): case secentesche che sembrano appoggiarsi l'una all'altra. La deformazione è dovuta al terreno paludoso e alle fondamenta di legno che cedono nel tempo.</div>
+        </div>
+        <div class="highlight-item">
+          <div class="highlight-dot"></div>
+          <div class="highlight-text"><strong>Magere Brug</strong> (Ponte Magro): il ponte levatoio più famoso di Amsterdam sull'Amstel. Di notte è illuminato con centinaia di lampadine bianche: torna a vederlo dopo il jazz.</div>
+        </div>
+      </div>
+      <div class="maps-row">
+        <a class="btn-m btn-dark" href="https://maps.google.com/?q=Dam+Square+Amsterdam" target="_blank">📍 Dam Square</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Begijnhof+Amsterdam" target="_blank">📍 Begijnhof</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Reguliersgracht+seven+bridges+Amsterdam" target="_blank">📍 7 Ponti</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Singel+7+Amsterdam" target="_blank">📍 Singel 7</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=The+Dancing+Houses+Amstel+102+Amsterdam" target="_blank">📍 Case danzanti</a>
+        <a class="btn-m btn-outline" href="https://maps.google.com/?q=Magere+Brug+Amsterdam" target="_blank">📍 Magere Brug</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Sera</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-coffee">🌿</div>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-coffee">☁️ Coffee</span>
+        <div class="tappa-name">Barney's + SWED (Snoop Dogg #1)</div>
+        <div class="tappa-desc"><strong>Barney's</strong> (Haarlemmerstraat): uno dei più premiati di Amsterdam, selezione ampia e qualità costante. · <strong>SWED</strong> (Marnixstraat 333): il primo coffee shop di Snoop Dogg in Europa, aperto nel 2024. Ora si chiama SWED dopo la questione con il comune.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Barney's+coffeeshop+Haarlemmerstraat+Amsterdam" target="_blank">📍 Barney's</a>
+          <a class="btn-m btn-outline" href="https://maps.google.com/?q=SWED+Marnixstraat+333+Amsterdam" target="_blank">📍 SWED</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-night">🎷</div>
+        <span class="tappa-time">21:00</span>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Jazz Café Alto</div>
+        <div class="tappa-desc">Korte Leidsedwarsstraat 115. Dal 1953, jazz e blues dal vivo ogni sera. Locale piccolo e intimo, si riempie: <strong>arriva prima delle 21:00.</strong> Musica dalle 22:00. Cover <strong>€5 cash</strong> il lunedì. Birre e cocktail al banco.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Jazz+Cafe+Alto+Amsterdam+Korte+Leidsedwarsstraat" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ MARTEDÌ ══════════════ -->
+<div class="screen hidden" id="s4">
+  <div class="day-hero" data-emoji="🚌">
+    <div class="day-hero-date">Martedì 3 novembre</div>
+    <div class="day-hero-title">Ultimo giro e partenza</div>
+    <div class="day-hero-sub">Waterlooplein · Mulino · Volo 21:20</div>
+  </div>
+
+  <div class="section-label">Mattina</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-default">🛒</div>
+        <span class="tappa-time">mattina</span>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-free">🆓 Gratuito</span>
+        <div class="tappa-name">Waterlooplein – mercato delle pulci</div>
+        <div class="tappa-desc">Il mercato delle pulci più antico di Amsterdam, aperto dal lunedì al sabato. Vestiti vintage, dischi in vinile, oggetti di design, antiquariato e roba strana di ogni tipo. Ottimo per trovare qualcosa di originale da portare a casa.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Waterlooplein+flea+market+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-default">🏭</div>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Brouwerij 't IJ – Mulino de Gooyer</div>
+        <div class="tappa-desc">L'unico mulino nel centro di Amsterdam. Al suo interno una birreria artigianale tra le più amate della città: birre prodotte sul posto, atmosfera unica. A 5 minuti dal Waterlooplein. <em>Il modo migliore per chiudere Amsterdam.</em></div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Brouwerij+t+IJ+Amsterdam+windmill" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-coffee">🌿</div>
+      </div>
+      <div class="tappa-content">
+        <span class="tappa-tag tag-coffee">☁️ Coffee – l'ultimo</span>
+        <div class="tappa-name">Tyson 2.0</div>
+        <div class="tappa-desc">Nieuwmarkt · a due passi dal mulino. Il coffee shop di Mike Tyson, chill e senza fronzoli. L'ultimo del viaggio.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Tyson+2.0+coffeeshop+Nieuwmarkt+Amsterdam" target="_blank">📍 Apri Maps</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">Partenza</div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-default">🏨</div>
+        <span class="tappa-time">18:30</span>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Acostar Hotel – ritiro bagagli</div>
+        <div class="tappa-desc">Passa a riprendere i bagagli prima di andare alla fermata del 397.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Acostar+Hotel+Kerkstraat+45+Amsterdam" target="_blank">📍 Hotel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tappa">
+    <div class="tappa-header">
+      <div class="tappa-icon-wrap">
+        <div class="tappa-icon ic-transport">🚌</div>
+        <span class="tappa-time">~19:00</span>
+      </div>
+      <div class="tappa-content">
+        <div class="tappa-name">Bus 397 → Schiphol</div>
+        <div class="tappa-desc">Fermata a Leidseplein, bus 397 direzione Schiphol. ~30 min. <strong>Volo alle 21:20</strong>: check-in consigliato entro le 20:50. Sei a posto.</div>
+        <div class="maps-row">
+          <a class="btn-m btn-dark" href="https://maps.google.com/?q=Leidseplein+bus+stop+Amsterdam" target="_blank">📍 Fermata Leidseplein</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ INFO ══════════════ -->
+<div class="screen hidden" id="s5">
+  <div class="day-hero" data-emoji="📋">
+    <div class="day-hero-date">Info pratiche</div>
+    <div class="day-hero-title">Prenotazioni, trasporti e coffee</div>
+    <div class="day-hero-sub">Tutto quello che serve avere a portata di mano</div>
+  </div>
+
+  <div class="section-label">✅ Prenotazioni fatte</div>
+
+  <div class="pren-box">
+    <div class="pren-title">🎟 Tutto prenotato · porta i biglietti nei Documenti</div>
+    <div class="pren-item"><span class="pren-item-dot">●</span><div><strong>Van Gogh Museum</strong> · slot 10:00 del 31/10 · €25<br><a href="https://www.vangoghmuseum.nl" target="_blank">vangoghmuseum.nl</a></div></div>
+    <div class="pren-item"><span class="pren-item-dot">●</span><div><strong>Moco Museum</strong> · slot 14:00 del 31/10<br><a href="https://www.mocomuseum.com" target="_blank">mocomuseum.com</a></div></div>
+    <div class="pren-item"><span class="pren-item-dot">●</span><div><strong>Heineken Experience</strong> · slot 16:00/16:30 del 30/10 · €23<br><a href="https://www.heinekenexperience.com" target="_blank">heinekenexperience.com</a></div></div>
+    <div class="pren-item"><span class="pren-item-dot">●</span><div><strong>SmokeBoat</strong> · slot 16:30 del 31/10 · €22 a testa<br><a href="https://www.smokeboat.com" target="_blank">smokeboat.com</a></div></div>
+    <div class="pren-item"><span class="pren-item-dot">●</span><div><strong>A'DAM Lookout</strong> · 2/11, entrata libera dalle 10:00 alle 21:00 · €28 con drink e VR Rollercoaster<br><a href="https://www.adamlookout.com" target="_blank">adamlookout.com</a></div></div>
+  </div>
+
+  <div class="section-label">🚌 Trasporti</div>
+
+  <div class="info-box">
+    <div class="info-box-header"><span>🛫</span><div class="info-box-title">Schiphol ↔ Amsterdam</div></div>
+    <div class="info-box-body">
+      <div class="info-row">
+        <div class="info-row-icon">🚌</div>
+        <div class="info-row-content">
+          <div class="info-row-label">Bus 397 – Amsterdam Airport Express</div>
+          <div class="info-row-desc">Fermata <strong>B17</strong> a Schiphol Plaza (esci e gira a destra, 1 min a piedi). Bus rosso ogni 7-8 min. <strong>Scendi a Leidseplein</strong> (~30 min, €6,50). Paga con carta contactless.</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-row-icon">🏨</div>
+        <div class="info-row-content">
+          <div class="info-row-label">Da Leidseplein all'hotel</div>
+          <div class="info-row-desc">Acostar Hotel in Kerkstraat 45 · <strong>5-7 minuti a piedi.</strong></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <div class="info-box-header"><span>🚋</span><div class="info-box-title">In città</div></div>
+    <div class="info-box-body">
+      <div class="info-row">
+        <div class="info-row-icon">💳</div>
+        <div class="info-row-content">
+          <div class="info-row-label">OVpay</div>
+          <div class="info-row-desc">Tocca la tua carta di credito/debito contactless ai tornelli di tram e metro. Massimo <strong>€10,50 al giorno</strong> a testa.</div>
+        </div>
+      </div>
+      <div class="info-row">
+        <div class="info-row-icon">⛴️</div>
+        <div class="info-row-content">
+          <div class="info-row-label">Ferry per Amsterdam Noord</div>
+          <div class="info-row-desc"><strong>Gratuito.</strong> Parte ogni 5 min da Amsterdam Centraal. Per A'DAM Lookout e zona nord.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-label">🌿 Coffee shop – tutti i locali</div>
+
+  <div class="coffee-zone-label">Quartiere a Luci Rosse</div>
+  <div class="coffee-card">
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">The Bulldog <span class="coffee-star">★</span></div>
+        <div class="coffee-desc">Il più iconico al mondo · tappa storica obbligatoria</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=The+Bulldog+Amsterdam" target="_blank">Maps</a>
+    </div>
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Green House <span class="coffee-star">★★</span></div>
+        <div class="coffee-desc">Qualità superiore al Bulldog · vince Cannabis Cup ogni anno</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Green+House+Oudezijds+Voorburgwal+191+Amsterdam" target="_blank">Maps</a>
+    </div>
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🎤</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Tha Dogg House</div>
+        <div class="coffee-desc">Oudebrugsteeg 26 · Snoop Dogg #2 · merch Death Row</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Tha+Dogg+House+Oudebrugsteeg+26+Amsterdam" target="_blank">Maps</a>
+    </div>
+  </div>
+
+  <div class="coffee-zone-label">Jordaan</div>
+  <div class="coffee-card">
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Paradox</div>
+        <div class="coffee-desc">Autentico · famoso per la space cake fatta in casa</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Paradox+coffeeshop+Amsterdam" target="_blank">Maps</a>
+    </div>
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Dampkring</div>
+        <div class="coffee-desc">Amato dai locali · scena di Ocean's Twelve girata qui</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Dampkring+coffeeshop+Amsterdam" target="_blank">Maps</a>
+    </div>
+  </div>
+
+  <div class="coffee-zone-label">Haarlemmerstraat</div>
+  <div class="coffee-card">
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Barney's <span class="coffee-star">★★</span></div>
+        <div class="coffee-desc">Premiato · ottima qualità costante</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Barney's+coffeeshop+Haarlemmerstraat+Amsterdam" target="_blank">Maps</a>
+    </div>
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Coffeeshop Amsterdam</div>
+        <div class="coffee-desc">Lounge su più piani · atmosfera rilassata</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Coffeeshop+Amsterdam+Haarlemmerstraat" target="_blank">Maps</a>
+    </div>
+  </div>
+
+  <div class="coffee-zone-label">Leidseplein / Marnixstraat</div>
+  <div class="coffee-card">
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🎤</div>
+      <div class="coffee-info">
+        <div class="coffee-name">SWED</div>
+        <div class="coffee-desc">Marnixstraat 333 · Snoop Dogg #1 · aperto nel 2024</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=SWED+Marnixstraat+333+Amsterdam" target="_blank">Maps</a>
+    </div>
+  </div>
+
+  <div class="coffee-zone-label">Vicino a Centraal</div>
+  <div class="coffee-card">
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Abraxas <span class="coffee-star">★★</span></div>
+        <div class="coffee-desc">Jonge Roelensteeg · ottima qualità · di strada Moco → Centraal</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Abraxas+Jonge+Roelensteeg+Amsterdam" target="_blank">Maps</a>
+    </div>
+  </div>
+
+  <div class="coffee-zone-label">De Pijp</div>
+  <div class="coffee-card">
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Katsu</div>
+        <div class="coffee-desc">Piccolo e autentico · vicino all'Heineken e Albert Cuyp</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Katsu+coffeeshop+Amsterdam" target="_blank">Maps</a>
+    </div>
+  </div>
+
+  <div class="coffee-zone-label">Nieuwmarkt</div>
+  <div class="coffee-card">
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🥊</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Tyson 2.0</div>
+        <div class="coffee-desc">Mike Tyson · chill · vicino al Waterlooplein e al mulino</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Tyson+2.0+coffeeshop+Nieuwmarkt+Amsterdam" target="_blank">Maps</a>
+    </div>
+  </div>
+
+  <div class="coffee-zone-label">Vicino all'hotel (Kerkstraat)</div>
+  <div class="coffee-card">
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Boerejongens <span class="coffee-star">★★</span></div>
+        <div class="coffee-desc">Utrechtsestraat · il migliore vicino all'hotel · aperto dalle 7:00</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Boerejongens+Utrechtsestraat+Amsterdam" target="_blank">Maps</a>
+    </div>
+    <div class="coffee-item">
+      <div class="coffee-dot-wrap">🌿</div>
+      <div class="coffee-info">
+        <div class="coffee-name">Boerejongens West</div>
+        <div class="coffee-desc">Zona ovest · stesso standard di qualità</div>
+      </div>
+      <a class="btn-m btn-outline" style="flex-shrink:0" href="https://maps.google.com/?q=Boerejongens+West+Amsterdam" target="_blank">Maps</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ STRUMENTI ══════════════ -->
+<div class="screen hidden" id="s6">
+  <div class="day-hero" data-emoji="🧰">
+    <div class="day-hero-date">Strumenti</div>
+    <div class="day-hero-title">Quello che serve in giro</div>
+    <div class="day-hero-sub">Luoghi vicini, spese, documenti e percorsi</div>
+  </div>
+
+  <div class="tool-tabs">
+    <button class="tool-tab active" data-tool="near">📍 Vicino a me</button>
+    <button class="tool-tab" data-tool="spese">💶 Spese</button>
+    <button class="tool-tab" data-tool="doc">📎 Documenti</button>
+    <button class="tool-tab" data-tool="nav">🧭 Percorsi</button>
+    <button class="tool-tab" data-tool="safe">🛡️ Sicurezza</button>
+  </div>
+
+  <section class="tool active" id="tool-near">
+    <div class="t-card">
+      <div class="t-title">Cosa c'è qui intorno</div>
+      <div class="t-note">Dalla tua posizione, in ordine di distanza. Funziona anche senza rete: usa solo il GPS del telefono.</div>
+      <div class="t-row t-gap">
+        <button class="t-btn yellow" id="near-gps">Usa la mia posizione</button>
+        <button class="t-btn ghost" id="near-hotel">Parti dall'hotel</button>
+      </div>
+      <div class="t-note small t-gap" id="near-pos"></div>
+      <div class="chips" id="near-chips"></div>
+      <div id="near-out"></div>
+      <div class="t-note small t-gap">Ristoranti, farmacie, bancomat e fermate vengono da OpenStreetMap (centro di Amsterdam) e possono essere incompleti.</div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-spese"><div id="spese-body"></div></section>
+
+  <section class="tool" id="tool-doc">
+    <div class="t-card">
+      <div class="t-title">Documenti sul telefono</div>
+      <div class="t-note">Biglietti, QR, passaporto, assicurazione. Restano salvati su questo telefono e si aprono anche senza rete.</div>
+      <label class="t-label">NOME (facoltativo)</label>
+      <input class="t-input" id="doc-title" placeholder="Es. Van Gogh Museum, ingresso">
+      <div class="t-gap"><button class="t-btn yellow" id="doc-add">Aggiungi foto o PDF</button></div>
+      <input type="file" id="doc-file" accept="image/*,application/pdf" multiple hidden>
+    </div>
+    <div class="t-card" id="doc-list"></div>
+  </section>
+
+  <section class="tool" id="tool-nav">
+    <div class="t-card">
+      <div class="t-title">Come ci arrivo</div>
+      <div class="t-note">Scegli la tappa e apro Google Maps con il percorso dalla tua posizione.</div>
+      <label class="t-label">DESTINAZIONE</label>
+      <select class="t-select" id="nav-dest"></select>
+      <div class="t-row t-gap">
+        <button class="t-btn yellow" data-mode="transit">🚋 Mezzi</button>
+        <button class="t-btn ghost" data-mode="walking">🚶 A piedi</button>
+        <button class="t-btn ghost" data-mode="bicycling">🚲 Bici</button>
+      </div>
+    </div>
+    <div class="t-card">
+      <div class="t-title">Orari e aeroporto</div>
+      <div class="place"><div class="place-ic">🚌</div><div class="place-body"><div class="place-name">Mezzi pubblici in tempo reale</div><div class="place-sub">9292, il planner olandese</div></div><a class="btn-m btn-outline" href="https://9292.nl/en" target="_blank">Apri</a></div>
+      <div class="place"><div class="place-ic">✈️</div><div class="place-body"><div class="place-name">Schiphol, piante interne</div><div class="place-sub">Google Maps mostra terminal e uscite</div></div><a class="btn-m btn-outline" href="https://www.google.com/maps/search/?api=1&query=Amsterdam+Airport+Schiphol" target="_blank">Apri</a></div>
+    </div>
+  </section>
+
+  <section class="tool" id="tool-safe">
+    <div class="t-card">
+      <div class="t-title">Consigli per stare tranquilli</div>
+      <div class="t-note small">Indicazioni generali e di buon senso. Non sono punteggi per quartiere, perché non esistono dati affidabili.</div>
+      <div class="t-gap">
+        <div class="safe-item"><span>🆘</span><span><strong>112</strong> è il numero unico di emergenza, gratuito, anche dall'estero.</span></div>
+        <div class="safe-item"><span>👜</span><span>Borseggi più frequenti a <strong>Centraal, Damrak, piazza Dam</strong> e nelle vie affollate: zaino davanti e telefono nella tasca interna.</span></div>
+        <div class="safe-item"><span>🚲</span><span>Le piste ciclabili rosse sono <strong>riservate alle bici</strong>, che arrivano veloci. Guarda sempre prima di attraversare.</span></div>
+        <div class="safe-item"><span>🚦</span><span>Nel quartiere a Luci Rosse <strong>niente foto alle vetrine</strong>. Di sera tieni d'occhio borse e portafoglio.</span></div>
+        <div class="safe-item"><span>🌿</span><span>Compra solo nei coffee shop autorizzati: per strada ti vendono roba finta o peggio.</span></div>
+        <div class="safe-item"><span>🚋</span><span>Sui tram si timbra con la carta contactless all'ingresso <strong>e all'uscita</strong>, altrimenti l'addebito è massimo.</span></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ══════════════ BOTTOM NAV ══════════════ -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showScreen(0)">
+    <span class="nav-icon">✈️</span>
+    <span class="nav-label">Ven 30</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen(1)">
+    <span class="nav-icon">🎃</span>
+    <span class="nav-label">Sab 31</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen(2)">
+    <span class="nav-icon">🌿</span>
+    <span class="nav-label">Dom 1</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen(3)">
+    <span class="nav-icon">🗼</span>
+    <span class="nav-label">Lun 2</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen(4)">
+    <span class="nav-icon">🚌</span>
+    <span class="nav-label">Mar 3</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen(5)">
+    <span class="nav-icon">📋</span>
+    <span class="nav-label">Info</span>
+  </button>
+  <button class="nav-btn" onclick="showScreen(6)">
+    <span class="nav-icon">🧰</span>
+    <span class="nav-label">Tools</span>
+  </button>
+</nav>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('sw.js'));
+}
+</script>
+<div class="viewer" id="viewer">
+  <div class="viewer-bar"><span id="viewer-title"></span><button class="t-btn small yellow" id="viewer-close">Chiudi</button></div>
+  <img id="viewer-img" alt="">
+</div>
+<script src="data-osm.js"></script>
+<script src="itin-data.js"></script>
+<script src="itin.js"></script>
+<script src="tools.js"></script>
+</body>
+</html>

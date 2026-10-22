@@ -1,0 +1,376 @@
+// Scheda Strumenti: vicino a me, spese condivise, documenti, navigatore, sicurezza.
+(function () {
+  'use strict';
+
+  // Indirizzo del Firebase Realtime Database delle spese (es. https://nome-default-rtdb.firebaseio.com). Vuoto = spese solo su questo telefono.
+  const SYNC_URL = '';
+
+  const HOTEL = { name: 'Acostar Hotel', lat: 52.3653, lon: 4.8858, q: 'Acostar Hotel Kerkstraat 45 Amsterdam' };
+
+  const FAMOUS = [
+    { n: 'Rijksmuseum', ic: '🖼️', lat: 52.3598, lon: 4.8850, t: 'Museo, Rembrandt e Vermeer' },
+    { n: 'Van Gogh Museum', ic: '🌻', lat: 52.3584, lon: 4.8811, t: 'Museo' },
+    { n: 'Moco Museum', ic: '🎨', lat: 52.3587, lon: 4.8820, t: 'Museo, Banksy e arte moderna' },
+    { n: 'Stedelijk Museum', ic: '🖼️', lat: 52.3579, lon: 4.8799, t: 'Arte moderna' },
+    { n: 'Casa di Anna Frank', ic: '🏠', lat: 52.3752, lon: 4.8841, t: 'Museo, serve prenotazione' },
+    { n: 'Dam e Palazzo Reale', ic: '🏛️', lat: 52.3731, lon: 4.8913, t: 'Piazza principale' },
+    { n: 'Vondelpark', ic: '🌳', lat: 52.3572, lon: 4.8641, t: 'Parco' },
+    { n: 'Bloemenmarkt', ic: '🌷', lat: 52.3669, lon: 4.8908, t: 'Mercato dei fiori' },
+    { n: 'Begijnhof', ic: '⛪', lat: 52.3694, lon: 4.8900, t: 'Cortile storico nascosto' },
+    { n: 'De 9 Straatjes', ic: '🛍️', lat: 52.3689, lon: 4.8850, t: 'Negozi e caffè' },
+    { n: 'Westerkerk e Jordaan', ic: '⛪', lat: 52.3745, lon: 4.8840, t: 'Quartiere e chiesa' },
+    { n: 'Leidseplein', ic: '🎭', lat: 52.3640, lon: 4.8828, t: 'Piazza, locali e teatri' },
+    { n: 'Rembrandtplein', ic: '🍻', lat: 52.3660, lon: 4.8966, t: 'Piazza, locali' },
+    { n: 'Heineken Experience', ic: '🍺', lat: 52.3578, lon: 4.8918, t: 'Visita alla fabbrica' },
+    { n: 'Albert Cuyp Market', ic: '🧇', lat: 52.3552, lon: 4.8918, t: 'Mercato di strada' },
+    { n: 'Magere Brug', ic: '🌉', lat: 52.3636, lon: 4.9024, t: 'Ponte sull\'Amstel' },
+    { n: 'Hortus Botanicus', ic: '🌿', lat: 52.3668, lon: 4.9078, t: 'Orto botanico' },
+    { n: 'Rembrandthuis', ic: '🖌️', lat: 52.3694, lon: 4.9013, t: 'Casa museo' },
+    { n: 'Nieuwmarkt', ic: '🏰', lat: 52.3726, lon: 4.9003, t: 'Piazza con la Waag' },
+    { n: 'Oude Kerk', ic: '⛪', lat: 52.3744, lon: 4.8981, t: 'Chiesa più antica' },
+    { n: 'De Wallen', ic: '🚦', lat: 52.3734, lon: 4.8983, t: 'Quartiere a Luci Rosse' },
+    { n: 'Amsterdam Centraal', ic: '🚉', lat: 52.3789, lon: 4.9006, t: 'Stazione e traghetti per il Nord' },
+    { n: 'NEMO Science Museum', ic: '🔬', lat: 52.3739, lon: 4.9121, t: 'Museo, terrazza panoramica' },
+    { n: "A'DAM Lookout", ic: '🎡', lat: 52.3838, lon: 4.9021, t: 'Panorama e altalena' },
+  ];
+
+  const CATS = {
+    cibo:   { l: '🍽️ Mangiare',   r: 600,  f: ['[amenity~"^(restaurant|fast_food|cafe)$"]'], ic: '🍽️' },
+    bar:    { l: '🍺 Bar',        r: 600,  f: ['[amenity~"^(bar|pub)$"]'], ic: '🍺' },
+    farm:   { l: '💊 Farmacie',   r: 600,  f: ['[amenity=pharmacy]'], ic: '💊' },
+    atm:    { l: '🏧 Bancomat',   r: 600,  f: ['[amenity=atm]'], ic: '🏧' },
+    stop:   { l: '🚋 Fermate',    r: 600,  f: ['[railway=tram_stop]', '[highway=bus_stop]', '[railway=station]'], ic: '🚋' },
+    wc:     { l: '🚻 Bagni',      r: 600,  f: ['[amenity=toilets]'], ic: '🚻' },
+    spesa:  { l: '🛒 Supermercati', r: 600, f: ['[shop=supermarket]'], ic: '🛒' },
+    visita: { l: '📸 Altri luoghi', r: 1000, f: ['[tourism~"^(attraction|museum|viewpoint|gallery)$"]'], ic: '📸' },
+  };
+
+  const $ = (s, r) => (r || document).querySelector(s);
+  const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  };
+  const eur = (c) => (c / 100).toLocaleString('it-IT', { style: 'currency', currency: 'EUR' });
+  const mapsPlace = (lat, lon, name) => 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(name ? name + ' ' : '') + lat + ',' + lon;
+
+  function distM(a, b) {
+    const R = 6371000, rad = Math.PI / 180;
+    const dLat = (b.lat - a.lat) * rad, dLon = (b.lon - a.lon) * rad;
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+  }
+  function fmtDist(m) {
+    const walk = Math.max(1, Math.round((m * 1.25) / 80));
+    const d = m < 1000 ? Math.round(m / 10) * 10 + ' m' : m < 20000 ? (m / 1000).toFixed(1).replace('.', ',') + ' km' : Math.round(m / 1000) + ' km';
+    return d + (walk <= 60 ? '<br>' + walk + ' min a piedi' : '');
+  }
+
+  // ── Schede ──
+  $$('.tool-tab').forEach((b) => b.addEventListener('click', () => {
+    $$('.tool-tab').forEach((x) => x.classList.toggle('active', x === b));
+    $$('.tool').forEach((t) => t.classList.toggle('active', t.id === 'tool-' + b.dataset.tool));
+    if (b.dataset.tool === 'spese') { renderSpese(); syncSpese(); }
+  }));
+
+  // ── Vicino a me ──
+  let pos = null;
+  let nearCat = 'famosi';
+
+  function renderChips() {
+    const box = $('#near-chips');
+    box.innerHTML = '<button class="chip' + (nearCat === 'famosi' ? ' active' : '') + '" data-c="famosi">⭐ Più famosi</button>' +
+      Object.keys(CATS).map((k) => '<button class="chip' + (nearCat === k ? ' active' : '') + '" data-c="' + k + '">' + CATS[k].l + '</button>').join('');
+    $$('.chip', box).forEach((c) => c.addEventListener('click', () => { nearCat = c.dataset.c; renderChips(); loadNear(); }));
+  }
+
+  function placeRow(p) {
+    return '<div class="place"><div class="place-ic">' + p.ic + '</div><div class="place-body"><div class="place-name">' + esc(p.n) +
+      '</div><div class="place-sub">' + esc(p.t || '') + '</div></div><div class="place-dist">' + fmtDist(p.d) +
+      '</div><a class="btn-m btn-outline" href="' + mapsPlace(p.lat, p.lon, p.q) + '" target="_blank">Maps</a></div>';
+  }
+
+  async function loadNear() {
+    const out = $('#near-out');
+    if (!pos) { out.innerHTML = '<div class="t-note">Premi "Usa la mia posizione" oppure "Parti dall\'hotel".</div>'; return; }
+    if (nearCat === 'famosi') {
+      const list = FAMOUS.map((p) => Object.assign({}, p, { d: distM(pos, p), q: p.n + ' Amsterdam' })).sort((a, b) => a.d - b.d);
+      out.innerHTML = list.map(placeRow).join('');
+      return;
+    }
+    const cat = CATS[nearCat];
+    const rows = (window.AMS_OSM && window.AMS_OSM[nearCat]) || [];
+    const label = cat.l.replace(/^\S+\s/, '');
+    const list = rows.map((r) => ({ n: r[0] || label, lat: r[1], lon: r[2], ic: cat.ic, t: r[3] ? 'Orari: ' + r[3] : (r[0] ? '' : 'senza nome'), d: distM(pos, { lat: r[1], lon: r[2] }) }))
+      .filter((p) => p.d <= cat.r).sort((a, b) => a.d - b.d).slice(0, 30);
+    out.innerHTML = list.length
+      ? list.map(placeRow).join('')
+      : '<div class="t-note">Niente di segnato nel raggio di ' + cat.r + ' m. Il catalogo copre il centro di Amsterdam: se sei più lontano, prova con "Più famosi".</div>';
+  }
+
+  function setPos(p, label) {
+    pos = p;
+    $('#near-pos').textContent = label;
+    loadNear();
+  }
+  $('#near-gps').addEventListener('click', () => {
+    if (!navigator.geolocation) { $('#near-pos').textContent = 'Posizione non disponibile su questo dispositivo.'; return; }
+    $('#near-pos').textContent = 'Cerco la posizione…';
+    navigator.geolocation.getCurrentPosition(
+      (g) => {
+        const p = { lat: g.coords.latitude, lon: g.coords.longitude };
+        const far = distM(p, HOTEL);
+        setPos(p, far > 25000
+          ? '📍 Posizione attuale, ma sei a ' + Math.round(far / 1000) + ' km da Amsterdam: i risultati qui valgono solo in città. Per provare l\'app usa "Parti dall\'hotel".'
+          : '📍 Posizione attuale');
+      },
+      () => { $('#near-pos').textContent = 'Posizione negata o non trovata. Controlla i permessi di Safari/Chrome oppure parti dall\'hotel.'; },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
+    );
+  });
+  $('#near-hotel').addEventListener('click', () => setPos({ lat: HOTEL.lat, lon: HOTEL.lon }, '🏨 Partenza: ' + HOTEL.name));
+  renderChips();
+  loadNear();
+
+  // ── Spese ──
+  const SK = 'ams-spese';
+  let S = store.get(SK, { code: '', me: '', people: [], records: [] });
+  const saveS = () => store.set(SK, S);
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const CAT_IC = { Cibo: '🍽️', Trasporti: '🚋', Ingressi: '🎟️', Alloggio: '🏨', Altro: '🧾' };
+  let syncState = 'off';
+
+  function liveExpenses() {
+    const dead = new Set(S.records.filter((r) => r.t === 'd').map((r) => r.target));
+    return S.records.filter((r) => r.t === 'e' && !dead.has(r.id)).sort((a, b) => b.ts - a.ts);
+  }
+  function peopleRecord() {
+    return S.records.filter((r) => r.t === 'p').sort((a, b) => b.ts - a.ts)[0];
+  }
+  function applyPeople() {
+    const p = peopleRecord();
+    if (p) S.people = p.names;
+  }
+
+  function splitShares(amount, who) {
+    const base = Math.floor(amount / who.length); let rest = amount - base * who.length;
+    const o = {}; who.forEach((w) => { o[w] = base + (rest-- > 0 ? 1 : 0); });
+    return o;
+  }
+
+  function renderSpese() {
+    applyPeople();
+    const box = $('#spese-body');
+    if (!S.people.length) {
+      box.innerHTML = '<div class="t-card"><div class="t-title">Prepariamo le spese</div>' +
+        '<div class="t-note">Scrivi i nomi di chi viaggia, separati da virgola. Poi scegli chi sei tu su questo telefono.</div>' +
+        '<label class="t-label">NOMI</label><input class="t-input" id="sp-names" placeholder="Etienne, Luca, Flavio">' +
+        '<label class="t-label">CODICE VIAGGIO (uguale su tutti i telefoni)</label><input class="t-input" id="sp-code" placeholder="lo stesso su tutti i telefoni" value="' + esc(S.code || 'ams-' + Math.random().toString(36).slice(2, 10)) + '">' +
+        '<div class="t-gap"><button class="t-btn yellow" id="sp-start">Inizia</button></div></div>';
+      $('#sp-start').addEventListener('click', () => {
+        const names = $('#sp-names').value.split(',').map((x) => x.trim()).filter(Boolean);
+        if (names.length < 1) return;
+        S.code = $('#sp-code').value.trim().replace(/[.$#\[\]\/]/g, '-') || ('ams-' + Math.random().toString(36).slice(2, 10));
+        S.records.push({ id: 'people', t: 'p', names, ts: Date.now(), synced: false });
+        S.people = names; S.me = S.me || names[0];
+        saveS(); renderSpese(); syncSpese();
+      });
+      return;
+    }
+    if (!S.me || !S.people.includes(S.me)) S.me = S.people[0];
+    const ex = liveExpenses();
+    const paid = {}, share = {};
+    S.people.forEach((p) => { paid[p] = 0; share[p] = 0; });
+    let total = 0;
+    ex.forEach((e) => {
+      total += e.amount;
+      if (paid[e.payer] != null) paid[e.payer] += e.amount;
+      const sh = splitShares(e.amount, e.who.length ? e.who : S.people);
+      Object.keys(sh).forEach((p) => { if (share[p] != null) share[p] += sh[p]; });
+    });
+    const net = S.people.map((p) => ({ p, v: paid[p] - share[p] }));
+    const cred = net.filter((x) => x.v > 0).map((x) => ({ ...x })).sort((a, b) => b.v - a.v);
+    const deb = net.filter((x) => x.v < 0).map((x) => ({ p: x.p, v: -x.v })).sort((a, b) => b.v - a.v);
+    const settle = [];
+    let i = 0, j = 0;
+    while (i < deb.length && j < cred.length) {
+      const m = Math.min(deb[i].v, cred[j].v);
+      if (m > 0) settle.push(deb[i].p + ' deve ' + eur(m) + ' a ' + cred[j].p);
+      deb[i].v -= m; cred[j].v -= m;
+      if (deb[i].v <= 0) i++;
+      if (cred[j].v <= 0) j++;
+    }
+
+    const statusTxt = { off: 'Solo su questo telefono', ok: 'Sincronizzato con gli altri', err: 'Non riesco a sincronizzare, riprovo' }[syncState];
+    box.innerHTML =
+      '<div class="t-card"><div class="t-row" style="justify-content:space-between"><div><div class="t-note small">TOTALE SPESO</div><div class="t-title" style="font-size:24px">' + eur(total) + '</div></div>' +
+      '<div class="t-note small"><span class="sync-dot ' + (syncState === 'ok' ? 'ok' : syncState === 'err' ? 'err' : '') + '"></span>' + statusTxt + '</div></div></div>' +
+
+      '<div class="t-card"><div class="t-title">Aggiungi una spesa</div>' +
+      '<label class="t-label">IMPORTO (€)</label><input class="t-input" id="sp-amt" inputmode="decimal" placeholder="0,00">' +
+      '<label class="t-label">COSA</label><input class="t-input" id="sp-desc" placeholder="Es. cena Foodhallen">' +
+      '<label class="t-label">CATEGORIA</label><select class="t-select" id="sp-cat">' + Object.keys(CAT_IC).map((c) => '<option>' + c + '</option>').join('') + '</select>' +
+      '<label class="t-label">PAGATO DA</label><select class="t-select" id="sp-payer">' + S.people.map((p) => '<option' + (p === S.me ? ' selected' : '') + '>' + esc(p) + '</option>').join('') + '</select>' +
+      '<label class="t-label">DIVISO TRA</label><div class="t-checks">' + S.people.map((p) => '<label class="t-check"><input type="checkbox" class="sp-who" value="' + esc(p) + '" checked> ' + esc(p) + '</label>').join('') + '</div>' +
+      '<div class="t-gap"><button class="t-btn yellow" id="sp-add">Aggiungi</button></div></div>' +
+
+      '<div class="t-card"><div class="t-title">Chi deve a chi</div>' +
+      (settle.length ? settle.map((s) => '<div class="settle">' + esc(s) + '</div>').join('') : '<div class="t-note">Per ora siete pari.</div>') +
+      '<div class="t-gap">' + net.map((x) => '<div class="balance"><span>' + esc(x.p) + '</span><span class="' + (x.v >= 0 ? 'pos' : 'neg') + '">' + (x.v >= 0 ? '+' : '') + eur(x.v) + '</span></div>').join('') + '</div></div>' +
+
+      '<div class="t-card"><div class="t-title">Spese registrate (' + ex.length + ')</div>' +
+      (ex.length ? ex.map((e) => '<div class="exp"><div class="place-ic">' + (CAT_IC[e.cat] || '🧾') + '</div><div class="exp-body"><div class="exp-desc">' + esc(e.desc || e.cat) + '</div><div class="exp-sub">' +
+        esc(e.payer) + ' ha pagato · ' + new Date(e.ts).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' · tra ' + e.who.length +
+        '</div></div><div class="exp-amt">' + eur(e.amount) + '</div><button class="x-btn" data-del="' + e.id + '" aria-label="Elimina">✕</button></div>').join('') : '<div class="t-note">Nessuna spesa ancora.</div>') + '</div>' +
+
+      '<details class="t-card"><summary class="t-title">Impostazioni</summary>' +
+      '<label class="t-label">SONO</label><select class="t-select" id="sp-me">' + S.people.map((p) => '<option' + (p === S.me ? ' selected' : '') + '>' + esc(p) + '</option>').join('') + '</select>' +
+      '<label class="t-label">CODICE VIAGGIO</label><input class="t-input" id="sp-code2" value="' + esc(S.code) + '">' +
+      '<label class="t-label">PARTECIPANTI</label><input class="t-input" id="sp-names2" value="' + esc(S.people.join(', ')) + '">' +
+      '<div class="t-row t-gap"><button class="t-btn ghost small" id="sp-save">Salva</button><button class="t-btn ghost small" id="sp-reset">Cancella i dati di questo telefono</button></div>' +
+      (SYNC_URL ? '' : '<div class="t-note small t-gap">Il database condiviso non è ancora collegato: le spese restano su questo telefono.</div>') + '</details>';
+
+    $('#sp-add').addEventListener('click', () => {
+      const amount = Math.round(parseFloat(($('#sp-amt').value || '').replace(',', '.')) * 100);
+      if (!(amount > 0)) { $('#sp-amt').focus(); return; }
+      const who = $$('.sp-who').filter((c) => c.checked).map((c) => c.value);
+      if (!who.length) return;
+      S.records.push({ id: newId(), t: 'e', amount, desc: $('#sp-desc').value.trim(), cat: $('#sp-cat').value, payer: $('#sp-payer').value, who, ts: Date.now(), synced: false });
+      S.me = $('#sp-payer').value;
+      saveS(); renderSpese(); syncSpese();
+    });
+    $$('[data-del]').forEach((b) => b.addEventListener('click', () => {
+      if (!confirm('Eliminare questa spesa?')) return;
+      S.records.push({ id: newId(), t: 'd', target: b.dataset.del, ts: Date.now(), synced: false });
+      saveS(); renderSpese(); syncSpese();
+    }));
+    $('#sp-me').addEventListener('change', (e) => { S.me = e.target.value; saveS(); });
+    $('#sp-save').addEventListener('click', () => {
+      const names = $('#sp-names2').value.split(',').map((x) => x.trim()).filter(Boolean);
+      S.code = $('#sp-code2').value.trim() || S.code;
+      if (names.length && names.join('|') !== S.people.join('|')) S.records.push({ id: 'people', t: 'p', names, ts: Date.now(), synced: false });
+      saveS(); renderSpese(); syncSpese();
+    });
+    $('#sp-reset').addEventListener('click', () => {
+      if (!confirm('Cancello tutte le spese salvate su questo telefono?')) return;
+      S = { code: '', me: '', people: [], records: [] }; saveS(); renderSpese();
+    });
+  }
+
+  // Ogni record è una riga a sé in Firebase: /trips/<codice>/<tipo>-<id>.json, quindi nessuna sovrascrittura tra telefoni
+  async function syncSpese() {
+    if (!SYNC_URL || !S.code) return;
+    const base = SYNC_URL.replace(/\/$/, '') + '/trips/' + encodeURIComponent(S.code);
+    const pending = S.records.filter((r) => !r.synced);
+    try {
+      await Promise.all(pending.map(({ synced, ...r }) =>
+        fetch(base + '/' + r.t + '-' + encodeURIComponent(r.id) + '.json', { method: 'PUT', body: JSON.stringify(r) })
+          .then((res) => { if (!res.ok) throw new Error('HTTP ' + res.status); })));
+      pending.forEach((r) => { r.synced = true; });
+      const res = await fetch(base + '.json');
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const remote = (await res.json()) || {};
+      const byId = new Map(S.records.map((r) => [r.id + r.t, r]));
+      Object.values(remote).forEach((r) => {
+        if (!r || !r.id || !r.t) return;
+        const cur = byId.get(r.id + r.t);
+        if (!cur) { const n = Object.assign({}, r, { synced: true }); S.records.push(n); byId.set(r.id + r.t, n); }
+        else if (r.t === 'p' && r.ts > cur.ts) Object.assign(cur, r, { synced: true });
+      });
+      syncState = 'ok';
+    } catch (e) {
+      syncState = 'err';
+    }
+    saveS();
+    if ($('#tool-spese').classList.contains('active') && !document.activeElement.matches('input,select')) renderSpese();
+  }
+  if (SYNC_URL) {
+    syncState = 'ok';
+    setInterval(() => { if (!document.hidden && $('#tool-spese').classList.contains('active')) syncSpese(); }, 20000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden) syncSpese(); });
+  }
+
+  // ── Documenti (IndexedDB) ──
+  let db = null;
+  function openDb() {
+    return new Promise((ok, ko) => {
+      const rq = indexedDB.open('amsterdam-docs', 1);
+      rq.onupgradeneeded = () => rq.result.createObjectStore('docs', { keyPath: 'id' });
+      rq.onsuccess = () => ok(rq.result); rq.onerror = () => ko(rq.error);
+    });
+  }
+  const tx = (mode) => db.transaction('docs', mode).objectStore('docs');
+  const dbAll = () => new Promise((ok, ko) => { const r = tx('readonly').getAll(); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+
+  async function renderDocs() {
+    const box = $('#doc-list');
+    if (!db) { box.innerHTML = '<div class="t-note">Il salvataggio dei documenti non è disponibile in questo browser.</div>'; return; }
+    const docs = (await dbAll()).sort((a, b) => b.added - a.added);
+    if (!docs.length) { box.innerHTML = '<div class="t-note">Nessun documento. Aggiungi biglietti, QR delle prenotazioni, passaporto o assicurazione.</div>'; return; }
+    box.innerHTML = '<div class="doc-grid">' + docs.map((d) =>
+      '<div class="doc" data-id="' + d.id + '"><div class="doc-thumb">' + (d.type.startsWith('image/') ? '<img alt="" data-thumb="' + d.id + '">' : '📄') +
+      '</div><div class="doc-name">' + esc(d.title) + '</div><button class="x-btn" data-rm="' + d.id + '" aria-label="Elimina">✕</button></div>').join('') + '</div>';
+    docs.forEach((d) => { const im = $('[data-thumb="' + d.id + '"]'); if (im) im.src = URL.createObjectURL(d.blob); });
+    $$('.doc', box).forEach((el) => el.addEventListener('click', (ev) => {
+      if (ev.target.closest('[data-rm]')) return;
+      const d = docs.find((x) => x.id === el.dataset.id);
+      openDoc(d);
+    }));
+    $$('[data-rm]', box).forEach((b) => b.addEventListener('click', () => {
+      if (!confirm('Eliminare questo documento dal telefono?')) return;
+      const r = tx('readwrite').delete(b.dataset.rm); r.onsuccess = renderDocs;
+    }));
+  }
+  function openDoc(d) {
+    const url = URL.createObjectURL(d.blob);
+    if (d.type.startsWith('image/')) {
+      $('#viewer-title').textContent = d.title; $('#viewer-img').src = url; $('#viewer').classList.add('open');
+    } else {
+      window.open(url, '_blank');
+    }
+  }
+  $('#viewer-close').addEventListener('click', () => { $('#viewer').classList.remove('open'); $('#viewer-img').removeAttribute('src'); });
+  $('#doc-add').addEventListener('click', () => $('#doc-file').click());
+  $('#doc-file').addEventListener('change', async (e) => {
+    const files = Array.from(e.target.files || []);
+    for (const f of files) {
+      const title = ($('#doc-title').value.trim() || f.name.replace(/\.[^.]+$/, '')) + (files.length > 1 ? '' : '');
+      await new Promise((ok) => { const r = tx('readwrite').put({ id: newId(), title, type: f.type || 'application/octet-stream', blob: f, added: Date.now() }); r.onsuccess = ok; r.onerror = ok; });
+    }
+    $('#doc-title').value = ''; e.target.value = '';
+    renderDocs();
+  });
+  openDb().then((d) => { db = d; renderDocs(); if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); }).catch(() => renderDocs());
+
+  // ── Navigatore ──
+  function buildDestinations() {
+    const groups = [{ label: 'Hotel', items: [{ n: HOTEL.name, q: HOTEL.q }] }];
+    $$('.screen').slice(0, 5).forEach((s) => {
+      const day = ($('.day-hero-date', s) || {}).textContent || '';
+      const items = [];
+      $$('.tappa', s).forEach((t) => {
+        const a = $('a[href*="maps.google.com/?q="]', t), nm = $('.tappa-name', t);
+        if (!a || !nm) return;
+        const q = decodeURIComponent(a.getAttribute('href').split('?q=')[1].replace(/\+/g, ' '));
+        items.push({ n: nm.textContent.trim(), q });
+      });
+      if (items.length) groups.push({ label: day.trim(), items });
+    });
+    groups.push({ label: 'Luoghi famosi', items: FAMOUS.map((p) => ({ n: p.n, q: p.n + ' Amsterdam' })) });
+    return groups;
+  }
+  (function initNav() {
+    const sel = $('#nav-dest');
+    const groups = buildDestinations();
+    sel.innerHTML = groups.map((g, gi) => '<optgroup label="' + esc(g.label) + '">' + g.items.map((it, ii) => '<option value="' + gi + '.' + ii + '">' + esc(it.n) + '</option>').join('') + '</optgroup>').join('');
+    $$('[data-mode]').forEach((b) => b.addEventListener('click', () => {
+      const [gi, ii] = sel.value.split('.').map(Number);
+      const dest = groups[gi].items[ii];
+      window.open('https://www.google.com/maps/dir/?api=1&destination=' + encodeURIComponent(dest.q) + '&travelmode=' + b.dataset.mode, '_blank');
+    }));
+  })();
+
+  // ── Torna al primo schermo quando si apre da un link con #strumenti ──
+  if (location.hash === '#strumenti' && typeof showScreen === 'function') showScreen(6, false);
+})();

@@ -1,0 +1,110 @@
+/* ── NUOVA GRAFICA: itinerario a tappe numerate ── */
+body .app-header { padding: 14px 16px 12px; }
+body .app-title { font-size: 26px; }
+.header-count {
+  background: rgba(255,255,255,.10); color: var(--ice); font-size: 12px; font-weight: 600;
+  padding: 6px 10px; border-radius: 10px; text-align: right; line-height: 1.3; max-width: 52%;
+}
+.header-count b { color: var(--yellow); font-weight: 700; }
+.day-chips { display: none; gap: 6px; margin-top: 12px; overflow-x: auto; scrollbar-width: none; }
+.day-chips::-webkit-scrollbar { display: none; }
+.day-chips.show { display: flex; }
+.chip-day {
+  flex: 1 0 auto; border: 0; cursor: pointer; text-align: center; padding: 6px 12px; border-radius: 12px;
+  background: rgba(255,255,255,.08); color: var(--ice); font: 500 11px 'Hanken Grotesk', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+.chip-day span { display: block; font-size: 17px; font-weight: 700; color: #fff; line-height: 1.2; }
+.chip-day.on { background: var(--yellow); color: var(--sg); }
+.chip-day.on span { color: var(--sg); }
+.chip-day.today::after { content: ""; display: block; width: 4px; height: 4px; border-radius: 50%; background: currentColor; margin: 2px auto 0; }
+
+/* intestazione del giorno */
+body .screen .day-hero { background: none; border-radius: 0; padding: 0; margin: 16px 0 12px; overflow: visible; }
+body .screen .day-hero::before { display: none; }
+body .screen .day-hero-date { font-family: 'Anton', sans-serif; font-weight: 400; font-size: 26px; letter-spacing: .5px; text-transform: none; color: var(--text); margin: 0; line-height: 1.1; }
+body .screen .day-hero-title { font-family: 'Hanken Grotesk', sans-serif; font-size: 15px; font-weight: 600; letter-spacing: 0; color: var(--text); margin-top: 4px; line-height: 1.3; }
+body .screen .day-hero-sub { font-size: 12px; color: var(--text3); margin-top: 2px; font-style: normal; }
+
+/* prenotazioni del giorno */
+.rs-list { margin-bottom: 14px; }
+.rs {
+  display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 9px 12px; margin-bottom: 6px; font-size: 13px;
+}
+.rs-ic { font-size: 16px; }
+.rs-t { flex: 1; min-width: 0; font-weight: 600; }
+.rs-t small { display: block; font-weight: 400; color: var(--text3); font-size: 12px; }
+.rs em { font-style: normal; font-size: 11px; font-weight: 700; color: #2a6b43; background: rgba(60,150,90,.14); padding: 3px 8px; border-radius: 8px; white-space: nowrap; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .rs em { color: #7fd3a0; } }
+:root[data-theme="dark"] .rs em { color: #7fd3a0; }
+
+/* periodi della giornata */
+body .screen .section-label { margin: 18px 0 8px 2px; }
+
+/* tappa */
+body .screen .tappa.st { display: flex; gap: 10px; background: none; border: 0; box-shadow: none; padding: 0; margin: 0; border-radius: 0; }
+.st-rail, .mv .st-rail { width: 26px; flex: 0 0 26px; display: flex; flex-direction: column; align-items: center; }
+.st-rail::after { content: ""; flex: 1; border-left: 2px dotted var(--ice); margin-top: 4px; min-height: 8px; }
+.st.last .st-rail::after { display: none; }
+.st-pin {
+  width: 26px; height: 26px; border-radius: 50%; background: var(--yellow); color: var(--sg);
+  font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center;
+}
+.st.done .st-pin { background: var(--surface2); color: var(--text3); }
+.st-card { flex: 1; min-width: 0; padding-bottom: 6px; }
+.st-top { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text3); min-height: 26px; flex-wrap: wrap; }
+.st-time { font-weight: 700; color: var(--text2); }
+.st-top .tappa-tag { margin: 0; }
+.st-done { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; }
+.st-done input { width: 18px; height: 18px; accent-color: #12272A; }
+.st-main { display: flex; gap: 10px; align-items: flex-start; }
+.st-text { flex: 1; min-width: 0; }
+body .st .tappa-name { font-size: 16px; font-weight: 600; line-height: 1.25; }
+.st.done .tappa-name { text-decoration: line-through; color: var(--text3); }
+body .st .tappa-desc { font-size: 13px; margin-top: 3px; }
+.st .tappa-desc.clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.st-more { border: 0; background: none; padding: 4px 0 0; font: 600 12px 'Hanken Grotesk', sans-serif; color: var(--text2); cursor: pointer; text-decoration: underline; }
+.st-ic { flex: 0 0 52px; height: 52px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.st .maps-row { margin-top: 8px; }
+
+/* spostamento tra due tappe: tratto di strada con l'omino */
+.st-card { padding-bottom: 12px; }
+.st-rail::after { border-left: 2px dotted var(--yellow); }
+.mv { display: flex; gap: 10px; align-items: stretch; margin: 0; }
+.mv .st-rail { position: relative; justify-content: center; }
+.mv .st-rail::before, .mv .st-rail::after { content: ""; flex: 1; border-left: 2px dotted var(--yellow); min-height: 8px; margin: 0; }
+.mv-badge {
+  width: 30px; height: 30px; border-radius: 50%; flex: 0 0 30px; display: flex; align-items: center; justify-content: center;
+  background: #F0F4F4; border: 2px solid var(--yellow); font-size: 17px; margin: 2px 0;
+}
+.mv-badge.foot { animation: cammina 1.6s ease-in-out infinite; }
+@keyframes cammina { 0%, 100% { transform: translateY(-2px) rotate(-4deg); } 50% { transform: translateY(2px) rotate(4deg); } }
+@media (prefers-reduced-motion: reduce) { .mv-badge.foot { animation: none; } }
+.mv-t {
+  flex: 1; min-width: 0; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  margin: 6px 0; padding: 8px 12px; background: var(--surface2); border-radius: 12px;
+}
+.mv-main b { display: block; font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; }
+.mv-main span { display: block; font-size: 12px; color: var(--text2); margin-top: 1px; }
+.mv-t a { flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--sg); background: var(--yellow); padding: 7px 11px; border-radius: 10px; text-decoration: none; }
+
+/* navigazione in basso a quattro voci */
+.nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.nav-btn .nav-label { font-size: 11px; }
+
+/* schermata Altro e rientri */
+.menu-row {
+  display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; border: 1px solid var(--border);
+  background: var(--surface); border-radius: 14px; padding: 14px; margin-bottom: 8px; cursor: pointer;
+  font: 600 15px 'Hanken Grotesk', sans-serif; color: var(--text); box-shadow: var(--shadow);
+}
+.menu-row small { display: block; font-weight: 400; font-size: 12px; color: var(--text3); margin-top: 1px; }
+.menu-row .menu-ic { font-size: 22px; width: 32px; text-align: center; }
+.menu-row .menu-go { margin-left: auto; color: var(--text3); font-size: 20px; }
+.back-link { border: 0; background: none; padding: 14px 0 0; font: 600 14px 'Hanken Grotesk', sans-serif; color: var(--text2); cursor: pointer; display: none; }
+.back-link.show { display: inline-block; }
+body #s6 .tool-tabs { display: none; }
+body #s6 .day-hero, body #s7 .day-hero { margin-top: 8px; }
+.page-title { font-family: 'Anton', sans-serif; font-size: 26px; font-weight: 400; margin: 16px 0 12px; letter-spacing: .5px; }
+body #s6 .day-hero { display: none; }
