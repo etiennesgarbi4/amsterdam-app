@@ -1401,7 +1401,8 @@ body::before {
       <label class="t-label">NOME (facoltativo)</label>
       <input class="t-input" id="doc-title" placeholder="Es. Van Gogh Museum, ingresso">
       <div class="t-gap"><button class="t-btn yellow" id="doc-add">Aggiungi foto o PDF</button></div>
-      <input type="file" id="doc-file" accept="image/*,application/pdf" multiple hidden>
+      <input type="file" id="doc-file" accept="image/*,application/pdf,.pdf,.heic" multiple style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" tabindex="-1">
+      <div class="t-note small t-gap" id="doc-msg" role="status"></div>
     </div>
     <div class="t-card" id="doc-list"></div>
   </section>

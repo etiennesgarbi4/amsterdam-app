@@ -461,6 +461,7 @@
       rq.onsuccess = () => ok(rq.result); rq.onerror = () => ko(rq.error);
     });
   }
+  const blobOf = (d) => d.blob || new Blob([d.data], { type: d.type });
   const tx = (mode) => db.transaction('docs', mode).objectStore('docs');
   const dbAll = () => new Promise((ok, ko) => { const r = tx('readonly').getAll(); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
 
@@ -472,7 +473,7 @@
     box.innerHTML = '<div class="doc-grid">' + docs.map((d) =>
       '<div class="doc" data-id="' + d.id + '"><div class="doc-thumb">' + (d.type.startsWith('image/') ? '<img alt="" data-thumb="' + d.id + '">' : '📄') +
       '</div><div class="doc-name">' + esc(d.title) + '</div><button class="x-btn" data-rm="' + d.id + '" aria-label="Elimina">✕</button></div>').join('') + '</div>';
-    docs.forEach((d) => { const im = $('[data-thumb="' + d.id + '"]'); if (im) im.src = URL.createObjectURL(d.blob); });
+    docs.forEach((d) => { const im = $('[data-thumb="' + d.id + '"]'); if (im) im.src = URL.createObjectURL(blobOf(d)); });
     $$('.doc', box).forEach((el) => el.addEventListener('click', (ev) => {
       if (ev.target.closest('[data-rm]')) return;
       const d = docs.find((x) => x.id === el.dataset.id);
@@ -484,7 +485,7 @@
     }));
   }
   function openDoc(d) {
-    const url = URL.createObjectURL(d.blob);
+    const url = URL.createObjectURL(blobOf(d));
     if (d.type.startsWith('image/')) {
       $('#viewer-title').textContent = d.title; $('#viewer-img').src = url; $('#viewer').classList.add('open');
     } else {
@@ -494,11 +495,22 @@
   $('#viewer-close').addEventListener('click', () => { $('#viewer').classList.remove('open'); $('#viewer-img').removeAttribute('src'); });
   $('#doc-add').addEventListener('click', () => $('#doc-file').click());
   $('#doc-file').addEventListener('change', async (e) => {
-    const files = Array.from(e.target.files || []);
+    const files = Array.from(e.target.files || []), msg = $('#doc-msg');
+    if (msg) msg.textContent = '';
+    let fatti = 0;
     for (const f of files) {
-      const title = ($('#doc-title').value.trim() || f.name.replace(/\.[^.]+$/, '')) + (files.length > 1 ? '' : '');
-      await new Promise((ok) => { const r = tx('readwrite').put({ id: newId(), title, type: f.type || 'application/octet-stream', blob: f, added: Date.now() }); r.onsuccess = ok; r.onerror = ok; });
+      const title = $('#doc-title').value.trim() || f.name.replace(/\.[^.]+$/, '') || 'Documento';
+      try {
+        if (!db) db = await openDb();
+        // si salva il contenuto, non il File: su iPhone il File preso dal selettore non si lascia memorizzare
+        const data = await f.arrayBuffer();
+        await new Promise((ok, ko) => { const r = tx('readwrite').put({ id: newId(), title, type: f.type || 'application/octet-stream', data, added: Date.now() }); r.onsuccess = ok; r.onerror = () => ko(r.error); });
+        fatti++;
+      } catch (err) {
+        if (msg) msg.textContent = 'Non sono riuscito a salvare "' + f.name + '": ' + ((err && (err.message || err.name)) || 'errore sconosciuto') + '. Se il file è molto grande, prova con una foto o uno screenshot del biglietto.';
+      }
     }
+    if (fatti && msg) msg.textContent = fatti === 1 ? 'Documento salvato su questo telefono.' : fatti + ' documenti salvati su questo telefono.';
     $('#doc-title').value = ''; e.target.value = '';
     renderDocs();
   });
