@@ -5,6 +5,7 @@
   const TRIP_DAYS = ['2026-10-30', '2026-10-31', '2026-11-01', '2026-11-02', '2026-11-03'];
   const DAY_CHIP = [['Ven', 30], ['Sab', 31], ['Dom', 1], ['Lun', 2], ['Mar', 3]];
   const COORDS = window.AMS_COORDS || {};
+  const HOTEL_Q = 'Acostar+Hotel+Kerkstraat+45+Amsterdam';
 
   const $ = (s, r) => (r || document).querySelector(s);
   const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
@@ -27,7 +28,7 @@
   const titleCase = (s) => s.replace(/[^A-Za-zÀ-ÿ' ]/g, '').trim().toLowerCase().replace(/(^|\s)(\S)/g, (m, x, y) => x + y.toUpperCase());
 
   // Riga di spostamento tra due luoghi consecutivi (tappe o quartieri), inserita prima di "before"
-  function connector(prev, cur, toName, before) {
+  function connector(prev, cur, toName, before, fromHotel) {
     if (!(prev && prev.q && cur.q && prev.c && cur.c)) return;
     const d = distM(prev.c, cur.c), walk = Math.max(1, Math.round((d * 1.3) / 80));
     const km = d < 1000 ? Math.round(d / 10) * 10 + ' m' : (d / 1000).toFixed(1).replace('.', ',') + ' km';
@@ -35,8 +36,10 @@
     mv.className = 'mv';
     const badge = ferry ? '⛴️' : foot ? '🚶' : '🚋';
     const title = ferry ? 'Traghetto gratuito' : foot ? walk + ' min a piedi' : 'Con i mezzi';
-    const sub = ferry ? 'Da Amsterdam Centraal, 5 min di traversata, verso ' + toName : km + ' verso ' + toName;
-    const tip = ferry ? '' : foot ? '' : '<em class="mv-tip">Carta contactless quando sali e quando scendi (check-out)</em>';
+    const sub = ferry
+      ? (fromHotel ? 'Dall\'hotel a Centraal (a piedi o in tram), poi traghetto di 5 min, verso ' + toName : 'Da Amsterdam Centraal, 5 min di traversata, verso ' + toName)
+      : km + (fromHotel ? ' dall\'hotel verso ' : ' verso ') + toName;
+    const tip = ferry ? (fromHotel ? '<em class="mv-tip">Se prendi il tram: carta quando sali e quando scendi (check-out). Il traghetto è gratuito</em>' : '') : foot ? '' : '<em class="mv-tip">Carta contactless quando sali e quando scendi (check-out)</em>';
     mv.innerHTML = '<div class="st-rail"><div class="mv-badge ' + (foot ? 'foot' : 'ride') + '">' + badge + '</div></div>' +
       '<div class="mv-t"><div class="mv-main"><b>' + title + '</b><span>' + sub + '</span>' + tip + '</div>' +
       '<a href="' + dir(prev.q, cur.q, foot ? 'walking' : 'transit') + '" target="_blank">Indicazioni</a></div>';
@@ -51,6 +54,13 @@
     const tappe = $$('.tappa', scr);
     let prev = null;
     const seq = $$('.tappa, .quartiere', scr);
+    // ogni giorno (tranne l'arrivo) si parte dall'hotel
+    if (di > 0 && seq.length) {
+      const first = seq[0], fq = qOf(first), fc = fq && COORDS[fq] ? fq : null;
+      const hotel = { q: HOTEL_Q, c: COORDS[HOTEL_Q] };
+      const fname = first.classList.contains('quartiere') ? titleCase($('.quartiere-title', first).textContent) : $('.tappa-name', first).textContent.split(' – ')[0].trim();
+      if (fc) connector(hotel, { q: fq, c: COORDS[fq] }, fname, first, true);
+    }
     seq.forEach((t) => {
       if (t.classList.contains('quartiere')) {
         const q0 = qOf(t), c0 = q0 && COORDS[q0] ? COORDS[q0] : null;
