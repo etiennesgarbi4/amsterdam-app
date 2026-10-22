@@ -47,7 +47,7 @@
         const to = $('.tappa-name', t).textContent.split(' – ')[0].trim();
         const foot = walk <= 25;
         mv.innerHTML = '<div class="st-rail"><div class="mv-badge ' + (foot ? 'foot' : 'ride') + '">' + (foot ? '🚶' : '🚋') + '</div></div>' +
-          '<div class="mv-t"><div class="mv-main"><b>' + (foot ? walk + ' min a piedi' : 'Con i mezzi') + '</b><span>' + km + ' verso ' + to + '</span></div>' +
+          '<div class="mv-t"><div class="mv-main"><b>' + (foot ? walk + ' min a piedi' : 'Con i mezzi') + '</b><span>' + km + ' verso ' + to + '</span>' + (foot ? '' : '<em class="mv-tip">Carta contactless quando sali e quando scendi (check-out)</em>') + '</div>' +
           '<a href="' + dir(prev.q, q, foot ? 'walking' : 'transit') + '" target="_blank">Indicazioni</a></div>';
         t.parentNode.insertBefore(mv, t);
       }

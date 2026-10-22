@@ -110,3 +110,4 @@ body #s6 .tool-tabs { display: none; }
 body #s6 .day-hero, body #s7 .day-hero { margin-top: 8px; }
 .page-title { font-family: 'Anton', sans-serif; font-size: 26px; font-weight: 400; margin: 16px 0 12px; letter-spacing: .5px; }
 body #s6 .day-hero { display: none; }
+.mv-tip { display: block; font-style: normal; font-size: 12px; font-weight: 600; color: var(--accent); margin-top: 3px; }
