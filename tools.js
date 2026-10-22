@@ -461,6 +461,10 @@
       rq.onsuccess = () => ok(rq.result); rq.onerror = () => ko(rq.error);
     });
   }
+  // attività a cui si può collegare un biglietto: il nome è lo stesso della tappa
+  const DOC_STOPS = ['Heineken Experience', 'Van Gogh Museum', 'Moco Museum', 'SmokeBoat', "A'DAM Lookout", 'Volo', 'Hotel Acostar'];
+  let docFilter = '', docsCache = [];
+  (function () { const sel = $('#doc-stop'); if (sel) sel.innerHTML = '<option value="">Altro (passaporto, assicurazione...)</option>' + DOC_STOPS.map((x) => '<option>' + esc(x) + '</option>').join(''); })();
   const blobOf = (d) => d.blob || new Blob([d.data], { type: d.type });
   const tx = (mode) => db.transaction('docs', mode).objectStore('docs');
   const dbAll = () => new Promise((ok, ko) => { const r = tx('readonly').getAll(); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
@@ -468,11 +472,15 @@
   async function renderDocs() {
     const box = $('#doc-list');
     if (!db) { box.innerHTML = '<div class="t-note">Il salvataggio dei documenti non è disponibile in questo browser.</div>'; return; }
-    const docs = (await dbAll()).sort((a, b) => b.added - a.added);
+    docsCache = (await dbAll()).sort((a, b) => b.added - a.added);
+    const docs = docFilter ? docsCache.filter((d) => d.stop === docFilter) : docsCache;
+    const bar = docFilter ? '<div class="doc-filter"><span>Biglietti: ' + esc(docFilter) + '</span><button id="doc-all">Mostra tutti</button></div>' : '';
+    if (!docs.length && docFilter) { box.innerHTML = bar + '<div class="t-note">Nessun biglietto caricato per questa attività. Scegli "' + esc(docFilter) + '" nel menù qui sopra e aggiungi la foto o il PDF.</div>'; $('#doc-all').onclick = () => { docFilter = ''; renderDocs(); }; const sel = $('#doc-stop'); if (sel) sel.value = docFilter; return; }
     if (!docs.length) { box.innerHTML = '<div class="t-note">Nessun documento. Aggiungi biglietti, QR delle prenotazioni, passaporto o assicurazione.</div>'; return; }
-    box.innerHTML = '<div class="doc-grid">' + docs.map((d) =>
+    box.innerHTML = bar + '<div class="doc-grid">' + docs.map((d) =>
       '<div class="doc" data-id="' + d.id + '"><div class="doc-thumb">' + (d.type.startsWith('image/') ? '<img alt="" data-thumb="' + d.id + '">' : '📄') +
-      '</div><div class="doc-name">' + esc(d.title) + '</div><button class="x-btn" data-rm="' + d.id + '" aria-label="Elimina">✕</button></div>').join('') + '</div>';
+      '</div><div class="doc-name">' + esc(d.title) + '</div>' + (d.stop ? '<div class="doc-stop">' + esc(d.stop) + '</div>' : '') + '<button class="x-btn" data-rm="' + d.id + '" aria-label="Elimina">✕</button></div>').join('') + '</div>';
+    if (docFilter) { $('#doc-all').onclick = () => { docFilter = ''; renderDocs(); }; const sel = $('#doc-stop'); if (sel) sel.value = docFilter; }
     docs.forEach((d) => { const im = $('[data-thumb="' + d.id + '"]'); if (im) im.src = URL.createObjectURL(blobOf(d)); });
     $$('.doc', box).forEach((el) => el.addEventListener('click', (ev) => {
       if (ev.target.closest('[data-rm]')) return;
@@ -493,6 +501,13 @@
     }
   }
   $('#viewer-close').addEventListener('click', () => { $('#viewer').classList.remove('open'); $('#viewer-img').removeAttribute('src'); });
+  // dal pulsante "Biglietto" di una tappa: un solo biglietto si apre subito, più biglietti si vedono in elenco
+  window.AMS_openTickets = (nome, goDoc) => {
+    const key = DOC_STOPS.find((k) => (nome || '').indexOf(k) === 0) || '';
+    const mine = key ? docsCache.filter((d) => d.stop === key) : [];
+    if (mine.length === 1) { openDoc(mine[0]); return; }
+    docFilter = key; goDoc(); renderDocs();
+  };
   $('#doc-add').addEventListener('click', () => $('#doc-file').click());
   $('#doc-file').addEventListener('change', async (e) => {
     const files = Array.from(e.target.files || []), msg = $('#doc-msg');
@@ -504,7 +519,7 @@
         if (!db) db = await openDb();
         // si salva il contenuto, non il File: su iPhone il File preso dal selettore non si lascia memorizzare
         const data = await f.arrayBuffer();
-        await new Promise((ok, ko) => { const r = tx('readwrite').put({ id: newId(), title, type: f.type || 'application/octet-stream', data, added: Date.now() }); r.onsuccess = ok; r.onerror = () => ko(r.error); });
+        await new Promise((ok, ko) => { const r = tx('readwrite').put({ id: newId(), title, type: f.type || 'application/octet-stream', data, stop: ($('#doc-stop') || {}).value || '', added: Date.now() }); r.onsuccess = ok; r.onerror = () => ko(r.error); });
         fatti++;
       } catch (err) {
         if (msg) msg.textContent = 'Non sono riuscito a salvare "' + f.name + '": ' + ((err && (err.message || err.name)) || 'errore sconosciuto') + '. Se il file è molto grande, prova con una foto o uno screenshot del biglietto.';

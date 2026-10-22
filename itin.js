@@ -112,7 +112,7 @@
         const row = maps || Object.assign(document.createElement('div'), { className: 'maps-row' });
         const tk = document.createElement('a');
         tk.className = 'btn-m btn-yellow'; tk.href = '#'; tk.textContent = 'Biglietto';
-        tk.addEventListener('click', (e) => { e.preventDefault(); go('doc'); });
+        tk.addEventListener('click', (e) => { e.preventDefault(); if (window.AMS_openTickets) window.AMS_openTickets(nomeT, () => go('doc')); else go('doc'); });
         row.appendChild(tk);
         $('.st-card', t).appendChild(row);
       } else if (maps) $('.st-card', t).appendChild(maps);
