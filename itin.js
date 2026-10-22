@@ -133,6 +133,20 @@
       t._more = more; t._desc = desc;
     });
 
+    // a fine giornata si rientra in hotel (non nel giorno della partenza)
+    const lastT = tappe[tappe.length - 1], lastName = lastT ? ($('.tappa-name', lastT) || {}).textContent || '' : '';
+    if (di <= 3 && lastT && prev && !/^(Acostar|Check-in)/.test(lastName.trim())) {
+      const end = document.createElement('div');
+      end.className = 'tappa st last';
+      end.innerHTML = '<div class="st-rail"><div class="st-pin">🏨</div></div>' +
+        '<div class="st-card"><div class="st-main"><div class="st-text"><div class="tappa-name">Rientro in hotel</div>' +
+        '<div class="tappa-desc">Acostar Hotel, Kerkstraat 45</div></div>' + (IMG.acostar ? '<div class="st-ic has-img">' + imgTag('acostar') + '</div>' : '') + '</div>' +
+        '<div class="maps-row"><a class="btn-m btn-dark" href="https://maps.google.com/?q=' + HOTEL_Q + '" target="_blank">📍 Apri Maps</a></div></div>';
+      lastT.classList.remove('last');
+      lastT.parentNode.insertBefore(end, lastT.nextSibling);
+      connector(prev, { q: HOTEL_Q, c: COORDS[HOTEL_Q] }, 'l\'hotel', end);
+    }
+
     // prenotazioni del giorno in cima
     const booked = tappe.filter((t) => $('.tag-book', t));
     if (booked.length) {
