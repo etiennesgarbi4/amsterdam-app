@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="it" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Amsterdam · Ottobre 2026</title>
-<meta name="theme-color" content="#000000">
+<meta name="theme-color" content="#EC0000">
 <meta name="description" content="Itinerario di Amsterdam, 30 ottobre - 3 novembre 2026">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,16 +19,16 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
 
 :root {
-  --sg: #000000;
-  --dg: #333333;
+  --sg: #EC0000;
+  --dg: #B80000;
   --accent: #EC0000;
   --accent-light: #FF5A5A;
   --on-accent: #FFFFFF;
   --ice: #E6E6E6;
   --white: #FFFFFF;
-  --bg: #F5F4F2;
+  --bg: #FFFFFF;
   --surface: #FFFFFF;
-  --surface2: #ECEBE8;
+  --surface2: #F3F2F0;
   --border: rgba(0,0,0,0.10);
   --text: #111111;
   --text2: #555555;
@@ -103,7 +103,7 @@ body::before {
 .app-dates {
   font-size: 12px;
   font-weight: 500;
-  color: var(--accent-light);
+  color: rgba(255,255,255,0.92);
   letter-spacing: 0.5px;
   margin-top: 4px;
 }
@@ -319,7 +319,7 @@ body::before {
 }
 .quartiere-sub {
   font-size: 12px;
-  color: var(--accent-light);
+  color: rgba(255,255,255,0.92);
   font-weight: 500;
   margin-top: 1px;
 }
@@ -375,7 +375,7 @@ body::before {
   -webkit-tap-highlight-color: transparent;
 }
 .btn-m:active { opacity: 0.7; }
-.btn-dark { background: var(--sg); color: var(--white); }
+.btn-dark { background: #fff; color: var(--accent); border: 1.5px solid var(--accent); }
 .btn-yellow { background: var(--accent); color: var(--on-accent); }
 .btn-outline { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
