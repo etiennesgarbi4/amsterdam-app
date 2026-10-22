@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Amsterdam · Ottobre 2026</title>
-<meta name="theme-color" content="#12272A">
+<meta name="theme-color" content="#000000">
 <meta name="description" content="Itinerario di Amsterdam, 30 ottobre - 3 novembre 2026">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -19,42 +19,44 @@
 @import url('https://fonts.googleapis.com/css2?family=Anton&family=Hanken+Grotesk:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&display=swap');
 
 :root {
-  --sg: #12272A;
-  --dg: #353C4C;
-  --yellow: #F5C374;
-  --ice: #C9DBDB;
+  --sg: #000000;
+  --dg: #333333;
+  --accent: #EC0000;
+  --accent-light: #FF5A5A;
+  --on-accent: #FFFFFF;
+  --ice: #E6E6E6;
   --white: #FFFFFF;
-  --bg: #F0F4F4;
+  --bg: #F5F4F2;
   --surface: #FFFFFF;
-  --surface2: #E8EEEE;
-  --border: rgba(18,39,42,0.10);
-  --text: #12272A;
-  --text2: #4a6165;
-  --text3: #7a9598;
+  --surface2: #ECEBE8;
+  --border: rgba(0,0,0,0.10);
+  --text: #111111;
+  --text2: #555555;
+  --text3: #8A8A8A;
   --radius: 16px;
-  --shadow: 0 2px 12px rgba(18,39,42,0.08);
+  --shadow: 0 2px 12px rgba(0,0,0,0.08);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0b1a1d;
-    --surface: #13272b;
-    --surface2: #1a3338;
-    --border: rgba(201,219,219,0.10);
-    --text: #e0eeee;
-    --text2: #8ab5b8;
-    --text3: #5a8a8d;
+    --bg: #0b0b0b;
+    --surface: #171717;
+    --surface2: #242424;
+    --border: rgba(255,255,255,0.12);
+    --text: #F2F2F2;
+    --text2: #B5B5B5;
+    --text3: #8A8A8A;
     color-scheme: dark;
   }
 }
 :root[data-theme="dark"] {
-  --bg: #0b1a1d;
-  --surface: #13272b;
-  --surface2: #1a3338;
-  --border: rgba(201,219,219,0.10);
-  --text: #e0eeee;
-  --text2: #8ab5b8;
-  --text3: #5a8a8d;
+  --bg: #0b0b0b;
+  --surface: #171717;
+  --surface2: #242424;
+  --border: rgba(255,255,255,0.12);
+  --text: #F2F2F2;
+  --text2: #B5B5B5;
+  --text3: #8A8A8A;
   color-scheme: dark;
 }
 
@@ -101,13 +103,13 @@ body::before {
 .app-dates {
   font-size: 12px;
   font-weight: 500;
-  color: var(--yellow);
+  color: var(--accent-light);
   letter-spacing: 0.5px;
   margin-top: 4px;
 }
 .header-badge {
-  background: var(--yellow);
-  color: var(--sg);
+  background: var(--accent);
+  color: var(--on-accent);
   font-size: 11px;
   font-weight: 700;
   padding: 5px 10px;
@@ -125,7 +127,7 @@ body::before {
   display: flex;
   padding-bottom: env(safe-area-inset-bottom, 0px);
   z-index: 100;
-  box-shadow: 0 -4px 20px rgba(18,39,42,0.08);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
 }
 .nav-btn {
   flex: 1;
@@ -142,11 +144,11 @@ body::before {
   transition: color 0.2s;
   -webkit-tap-highlight-color: transparent;
 }
-.nav-btn.active { color: var(--sg); }
+.nav-btn.active { color: var(--accent); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .nav-btn.active { color: var(--yellow); }
+  :root:not([data-theme="light"]) .nav-btn.active { color: var(--accent-light); }
 }
-:root[data-theme="dark"] .nav-btn.active { color: var(--yellow); }
+:root[data-theme="dark"] .nav-btn.active { color: var(--accent-light); }
 .nav-icon { font-size: 20px; line-height: 1; }
 .nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.2px; }
 
@@ -176,7 +178,7 @@ body::before {
   font-weight: 700;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: var(--yellow);
+  color: var(--accent);
   margin-bottom: 6px;
 }
 .day-hero-title {
@@ -188,7 +190,7 @@ body::before {
 }
 .day-hero-sub {
   font-size: 13px;
-  color: rgba(201,219,219,0.7);
+  color: rgba(255,255,255,0.7);
   margin-top: 6px;
   font-weight: 400;
   font-style: italic;
@@ -233,10 +235,10 @@ body::before {
   flex-shrink: 0;
 }
 .ic-default { background: var(--surface2); }
-.ic-coffee { background: rgba(245,195,116,0.15); }
+.ic-coffee { background: rgba(236,0,0,0.10); }
 .ic-food { background: rgba(100,180,120,0.12); }
-.ic-must { background: rgba(18,39,42,0.08); }
-.ic-transport { background: rgba(53,60,76,0.08); }
+.ic-must { background: rgba(0,0,0,0.08); }
+.ic-transport { background: rgba(0,0,0,0.06); }
 .ic-night { background: rgba(80,60,120,0.10); }
 
 .tappa-time {
@@ -260,17 +262,17 @@ body::before {
   text-transform: uppercase;
   margin-bottom: 4px;
 }
-.tag-coffee { background: rgba(245,195,116,0.2); color: #8a5c00; }
+.tag-coffee { background: rgba(236,0,0,0.10); color: #A30000; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .tag-coffee { background: rgba(245,195,116,0.15); color: var(--yellow); }
+  :root:not([data-theme="light"]) .tag-coffee { background: rgba(255,90,90,0.16); color: var(--accent-light); }
 }
-:root[data-theme="dark"] .tag-coffee { background: rgba(245,195,116,0.15); color: var(--yellow); }
-.tag-book { background: rgba(220,60,60,0.1); color: #8a1a1a; }
+:root[data-theme="dark"] .tag-coffee { background: rgba(255,90,90,0.16); color: var(--accent-light); }
+.tag-book { background: rgba(60,150,90,0.14); color: #2a6b43; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .tag-book { background: rgba(220,60,60,0.15); color: #f08080; }
+  :root:not([data-theme="light"]) .tag-book { background: rgba(60,150,90,0.18); color: #7fd3a0; }
 }
-:root[data-theme="dark"] .tag-book { background: rgba(220,60,60,0.15); color: #f08080; }
-.tag-free { background: rgba(18,39,42,0.07); color: var(--text2); }
+:root[data-theme="dark"] .tag-book { background: rgba(60,150,90,0.18); color: #7fd3a0; }
+.tag-free { background: rgba(0,0,0,0.07); color: var(--text2); }
 .tag-food { background: rgba(80,160,100,0.12); color: #2a6a3a; }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .tag-food { background: rgba(80,160,100,0.15); color: #80c890; }
@@ -317,7 +319,7 @@ body::before {
 }
 .quartiere-sub {
   font-size: 12px;
-  color: var(--yellow);
+  color: var(--accent-light);
   font-weight: 500;
   margin-top: 1px;
 }
@@ -341,7 +343,7 @@ body::before {
 .highlight-dot {
   width: 6px; height: 6px;
   border-radius: 50%;
-  background: var(--yellow);
+  background: var(--accent);
   flex-shrink: 0;
   margin-top: 5px;
 }
@@ -374,7 +376,7 @@ body::before {
 }
 .btn-m:active { opacity: 0.7; }
 .btn-dark { background: var(--sg); color: var(--white); }
-.btn-yellow { background: var(--yellow); color: var(--sg); }
+.btn-yellow { background: var(--accent); color: var(--on-accent); }
 .btn-outline { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 
 /* ── COFFEE SHOP LIST ── */
@@ -413,7 +415,7 @@ body::before {
 .coffee-info { flex: 1; min-width: 0; }
 .coffee-name { font-size: 14px; font-weight: 700; color: var(--text); }
 .coffee-desc { font-size: 12px; color: var(--text3); margin-top: 1px; }
-.coffee-star { color: var(--yellow); font-size: 12px; }
+.coffee-star { color: var(--accent); font-size: 12px; }
 
 /* ── INFO BOX ── */
 .info-box {
@@ -447,9 +449,9 @@ body::before {
 .info-row-desc { font-size: 12px; color: var(--text2); margin-top: 2px; line-height: 1.5; }
 .info-row-desc a { color: var(--sg); font-weight: 600; text-decoration: underline; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .info-row-desc a { color: var(--yellow); }
+  :root:not([data-theme="light"]) .info-row-desc a { color: var(--accent-light); }
 }
-:root[data-theme="dark"] .info-row-desc a { color: var(--yellow); }
+:root[data-theme="dark"] .info-row-desc a { color: var(--accent-light); }
 
 /* ── PRENOTAZIONI ── */
 .pren-box {
@@ -629,7 +631,7 @@ body::before {
         <div class="tappa-desc">~1,5h. Il percorso immersivo nello storico birrificio originale: storia del marchio, processo di produzione, degustazione. <strong>2 birre incluse nel biglietto €23.</strong> Slot già prenotato per le 16:00/16:30.</div>
         <div class="maps-row">
           <a class="btn-m btn-dark" href="https://maps.google.com/?q=Heineken+Experience+Amsterdam+Stadhouderskade" target="_blank">📍 Apri Maps</a>
-          <a class="btn-m btn-yellow" href="https://www.heinekenexperience.com" target="_blank">🎟 Sito ufficiale</a>
+          <a class="btn-m btn-yellow" href="https://www.heinekenexperience.com" target="_blank">Sito ufficiale</a>
         </div>
       </div>
     </div>
@@ -673,7 +675,7 @@ body::before {
         <div class="tappa-desc">~2,5/3h. La collezione più grande al mondo di Van Gogh: <strong>I Girasoli, I Mangiatori di Patate, Mandorlo in Fiore, La Camera da Letto</strong>. 4 piani, sale cronologiche che seguono l'evoluzione dell'artista dalla Olanda alla Provenza. Il sabato mattina può essere affollato: arriva qualche minuto prima dello slot. <strong>€25 · vangoghmuseum.nl</strong></div>
         <div class="maps-row">
           <a class="btn-m btn-dark" href="https://maps.google.com/?q=Van+Gogh+Museum+Amsterdam+Museumplein" target="_blank">📍 Apri Maps</a>
-          <a class="btn-m btn-yellow" href="https://www.vangoghmuseum.nl" target="_blank">🎟 Sito ufficiale</a>
+          <a class="btn-m btn-yellow" href="https://www.vangoghmuseum.nl" target="_blank">Sito ufficiale</a>
         </div>
       </div>
     </div>
@@ -708,7 +710,7 @@ body::before {
         <div class="tappa-desc">~1,5h. A 2 minuti dal Van Gogh. <strong>Banksy, Andy Warhol, Jean-Michel Basquiat, Keith Haring, Yayoi Kusama.</strong> Uno dei musei più fotografati di Amsterdam: ogni sala è pensata per essere vissuta oltre che vista. <strong>mocomuseum.com</strong></div>
         <div class="maps-row">
           <a class="btn-m btn-dark" href="https://maps.google.com/?q=Moco+Museum+Amsterdam+Honthorststraat" target="_blank">📍 Apri Maps</a>
-          <a class="btn-m btn-yellow" href="https://www.mocomuseum.com" target="_blank">🎟 Sito ufficiale</a>
+          <a class="btn-m btn-yellow" href="https://www.mocomuseum.com" target="_blank">Sito ufficiale</a>
         </div>
       </div>
     </div>
@@ -745,7 +747,7 @@ body::before {
         <div class="tappa-desc">~1h. Crociera privata sui canali con cannabis legale a bordo. Parti con ancora un po' di luce e finisci sui canali illuminati al tramonto. <strong>NO tabacco. €22 a testa · smokeboat.com</strong></div>
         <div class="maps-row">
           <a class="btn-m btn-dark" href="https://maps.google.com/?q=Amsterdam+Centraal+Station" target="_blank">📍 Centraal</a>
-          <a class="btn-m btn-yellow" href="https://www.smokeboat.com" target="_blank">🎟 Sito ufficiale</a>
+          <a class="btn-m btn-yellow" href="https://www.smokeboat.com" target="_blank">Sito ufficiale</a>
         </div>
       </div>
     </div>

@@ -69,7 +69,7 @@
       if (tag && tag.classList.contains('tag-book')) {
         const row = maps || Object.assign(document.createElement('div'), { className: 'maps-row' });
         const tk = document.createElement('a');
-        tk.className = 'btn-m btn-yellow'; tk.href = '#'; tk.textContent = '🎟 Biglietto';
+        tk.className = 'btn-m btn-yellow'; tk.href = '#'; tk.textContent = 'Biglietto';
         tk.addEventListener('click', (e) => { e.preventDefault(); go('doc'); });
         row.appendChild(tk);
         $('.st-card', t).appendChild(row);
@@ -113,11 +113,12 @@
   }
 
   // ── Intestazione e barra dei giorni ──
+  const XXX = '<svg class="xxx" viewBox="0 0 52 14" aria-hidden="true"><g stroke="#fff" stroke-width="3.4"><path d="M1.5 1.5 12.5 12.5M12.5 1.5 1.5 12.5"/><path d="M19.5 1.5 30.5 12.5M30.5 1.5 19.5 12.5" transform="translate(-1 0)"/><path d="M37.5 1.5 48.5 12.5M48.5 1.5 37.5 12.5" transform="translate(-1 0)"/></g></svg>';
   const header = $('.app-header');
   const todayIso = iso(new Date());
   const todayIdx = TRIP_DAYS.indexOf(todayIso);
   header.innerHTML =
-    '<div class="app-header-inner"><div><div class="app-title">AMSTERDAM 🇳🇱</div><div class="app-dates">30 ottobre - 3 novembre 2026</div></div><div class="header-count" id="hc"></div></div>' +
+    '<div class="app-header-inner"><div><div class="app-title">AMSTERDAM'+ XXX +'</div><div class="app-dates">30 ottobre - 3 novembre 2026</div></div><div class="header-count" id="hc"></div></div>' +
     '<div class="day-chips" id="chips">' + DAY_CHIP.map((d, i) => '<button class="chip-day' + (i === todayIdx ? ' today' : '') + '" data-day="' + i + '">' + d[0] + '<span>' + d[1] + '</span></button>').join('') + '</div>';
 
   function headerCount() {

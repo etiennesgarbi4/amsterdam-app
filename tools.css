@@ -29,7 +29,7 @@
   font: 700 14px 'Hanken Grotesk', sans-serif; background: var(--sg); color: var(--white);
   -webkit-tap-highlight-color: transparent;
 }
-.t-btn.yellow { background: var(--yellow); color: var(--sg); }
+.t-btn.yellow { background: var(--accent); color: var(--on-accent); }
 .t-btn.ghost { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
 .t-btn.small { padding: 7px 10px; font-size: 12px; }
 .t-btn:active { opacity: .7; }
@@ -51,7 +51,7 @@
   border: 1px solid var(--border); background: var(--surface2); color: var(--text);
   border-radius: 20px; padding: 8px 12px; font: 600 13px 'Hanken Grotesk', sans-serif; cursor: pointer;
 }
-.chip.active { background: var(--yellow); color: var(--sg); border-color: var(--yellow); }
+.chip.active { background: var(--accent); color: var(--on-accent); border-color: var(--accent); }
 
 .place {
   display: flex; align-items: center; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--border);

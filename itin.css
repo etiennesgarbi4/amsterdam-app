@@ -1,11 +1,12 @@
 /* ── NUOVA GRAFICA: itinerario a tappe numerate ── */
-body .app-header { padding: 14px 16px 12px; }
+body .app-header { padding: 14px 16px 12px; background: #000; border-bottom: 4px solid var(--accent); }
+.xxx { display: inline-block; width: 52px; height: 14px; margin-left: 10px; vertical-align: 2px; }
 body .app-title { font-size: 26px; }
 .header-count {
   background: rgba(255,255,255,.10); color: var(--ice); font-size: 12px; font-weight: 600;
   padding: 6px 10px; border-radius: 10px; text-align: right; line-height: 1.3; max-width: 52%;
 }
-.header-count b { color: var(--yellow); font-weight: 700; }
+.header-count b { color: var(--accent-light); font-weight: 700; }
 .day-chips { display: none; gap: 6px; margin-top: 12px; overflow-x: auto; scrollbar-width: none; }
 .day-chips::-webkit-scrollbar { display: none; }
 .day-chips.show { display: flex; }
@@ -15,8 +16,8 @@ body .app-title { font-size: 26px; }
   -webkit-tap-highlight-color: transparent;
 }
 .chip-day span { display: block; font-size: 17px; font-weight: 700; color: #fff; line-height: 1.2; }
-.chip-day.on { background: var(--yellow); color: var(--sg); }
-.chip-day.on span { color: var(--sg); }
+.chip-day.on { background: var(--accent); color: var(--on-accent); }
+.chip-day.on span { color: var(--on-accent); }
 .chip-day.today::after { content: ""; display: block; width: 4px; height: 4px; border-radius: 50%; background: currentColor; margin: 2px auto 0; }
 
 /* intestazione del giorno */
@@ -48,7 +49,7 @@ body .screen .tappa.st { display: flex; gap: 10px; background: none; border: 0; 
 .st-rail::after { content: ""; flex: 1; border-left: 2px dotted var(--ice); margin-top: 4px; min-height: 8px; }
 .st.last .st-rail::after { display: none; }
 .st-pin {
-  width: 26px; height: 26px; border-radius: 50%; background: var(--yellow); color: var(--sg);
+  width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: var(--on-accent);
   font-weight: 700; font-size: 13px; display: flex; align-items: center; justify-content: center;
 }
 .st.done .st-pin { background: var(--surface2); color: var(--text3); }
@@ -57,7 +58,7 @@ body .screen .tappa.st { display: flex; gap: 10px; background: none; border: 0; 
 .st-time { font-weight: 700; color: var(--text2); }
 .st-top .tappa-tag { margin: 0; }
 .st-done { margin-left: auto; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--text2); cursor: pointer; }
-.st-done input { width: 18px; height: 18px; accent-color: #12272A; }
+.st-done input { width: 18px; height: 18px; accent-color: #EC0000; }
 .st-main { display: flex; gap: 10px; align-items: flex-start; }
 .st-text { flex: 1; min-width: 0; }
 body .st .tappa-name { font-size: 16px; font-weight: 600; line-height: 1.25; }
@@ -70,13 +71,13 @@ body .st .tappa-desc { font-size: 13px; margin-top: 3px; }
 
 /* spostamento tra due tappe: tratto di strada con l'omino */
 .st-card { padding-bottom: 12px; }
-.st-rail::after { border-left: 2px dotted var(--yellow); }
+.st-rail::after { border-left: 2px dotted var(--accent); }
 .mv { display: flex; gap: 10px; align-items: stretch; margin: 0; }
 .mv .st-rail { position: relative; justify-content: center; }
-.mv .st-rail::before, .mv .st-rail::after { content: ""; flex: 1; border-left: 2px dotted var(--yellow); min-height: 8px; margin: 0; }
+.mv .st-rail::before, .mv .st-rail::after { content: ""; flex: 1; border-left: 2px dotted var(--accent); min-height: 8px; margin: 0; }
 .mv-badge {
   width: 30px; height: 30px; border-radius: 50%; flex: 0 0 30px; display: flex; align-items: center; justify-content: center;
-  background: #F0F4F4; border: 2px solid var(--yellow); font-size: 17px; margin: 2px 0;
+  background: #FFFFFF; border: 2px solid var(--accent); font-size: 17px; margin: 2px 0;
 }
 .mv-badge.foot { animation: cammina 1.6s ease-in-out infinite; }
 @keyframes cammina { 0%, 100% { transform: translateY(-2px) rotate(-4deg); } 50% { transform: translateY(2px) rotate(4deg); } }
@@ -87,7 +88,7 @@ body .st .tappa-desc { font-size: 13px; margin-top: 3px; }
 }
 .mv-main b { display: block; font-size: 14px; font-weight: 700; color: var(--text); line-height: 1.2; }
 .mv-main span { display: block; font-size: 12px; color: var(--text2); margin-top: 1px; }
-.mv-t a { flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--sg); background: var(--yellow); padding: 7px 11px; border-radius: 10px; text-decoration: none; }
+.mv-t a { flex: 0 0 auto; font-size: 12px; font-weight: 700; color: var(--on-accent); background: var(--accent); padding: 7px 11px; border-radius: 10px; text-decoration: none; }
 
 /* navigazione in basso a quattro voci */
 .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }

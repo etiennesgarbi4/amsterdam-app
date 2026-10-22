@@ -1,5 +1,5 @@
 // Cache per l'uso offline. Cambiare VERSION a ogni modifica dei file.
-const VERSION = 'amsterdam-v21';
+const VERSION = 'amsterdam-v24';
 const CORE = ['./', 'index.html', 'tools.css', 'itin.css', 'itin.js', 'itin-data.js', 'tools.js', 'data-osm.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
