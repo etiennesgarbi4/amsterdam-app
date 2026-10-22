@@ -1382,6 +1382,7 @@ body::before {
     <button class="tool-tab active" data-tool="near">📍 Vicino a me</button>
     <button class="tool-tab" data-tool="spese">💶 Spese</button>
     <button class="tool-tab" data-tool="doc">📎 Documenti</button>
+    <button class="tool-tab" data-tool="pin">📌 Da ricordare</button>
     <button class="tool-tab" data-tool="nav">🧭 Percorsi</button>
     <button class="tool-tab" data-tool="safe">🛡️ Sicurezza</button>
   </div>
@@ -1405,6 +1406,31 @@ body::before {
   </section>
 
   <section class="tool" id="tool-spese"><div id="spese-body"></div></section>
+
+  <section class="tool" id="tool-pin">
+    <div class="t-card">
+      <div class="t-title">Punti da ricordare</div>
+      <div class="t-note">Un negozio, un locale, un posto da ritrovare: scatta una foto e l'app salva la posizione da sola. Restano su questo telefono e si aprono anche senza rete.</div>
+      <label class="t-label">NOME</label>
+      <input class="t-input" id="pin-title" placeholder="Es. Negozio di dischi, da tornare">
+      <label class="t-label">NOTA (facoltativa)</label>
+      <input class="t-input" id="pin-note" placeholder="Es. chiude alle 18, comprare la tazza">
+      <div class="t-row t-gap">
+        <button class="t-btn yellow" id="pin-cam">📷 Scatta una foto</button>
+        <button class="t-btn ghost" id="pin-gal">Dalla galleria</button>
+      </div>
+      <input type="file" id="pin-file-cam" accept="image/*" capture="environment" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" tabindex="-1">
+      <input type="file" id="pin-file-gal" accept="image/*" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none" tabindex="-1">
+      <div class="pin-prev" id="pin-prev"></div>
+      <div class="t-note small t-gap" id="pin-pos">Posizione: la prendo da sola quando salvi.</div>
+      <div class="t-row t-gap">
+        <button class="t-btn yellow" id="pin-save">Salva il punto</button>
+        <button class="t-btn ghost" id="pin-clear">Svuota</button>
+      </div>
+      <div class="t-note small t-gap" id="pin-msg" role="status"></div>
+    </div>
+    <div class="t-card" id="pin-list"></div>
+  </section>
 
   <section class="tool" id="tool-doc">
     <div class="t-card">

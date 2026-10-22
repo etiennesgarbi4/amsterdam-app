@@ -599,6 +599,98 @@
     }));
   })();
 
+  // ── Punti da ricordare: foto scattata sul momento e posizione presa dal telefono ──
+  let pdb = null, pinImg = null, pinShown = [];
+  function openPinDb() {
+    return new Promise((ok, ko) => {
+      const rq = indexedDB.open('amsterdam-pins', 1);
+      rq.onupgradeneeded = () => rq.result.createObjectStore('pins', { keyPath: 'id' });
+      rq.onsuccess = () => ok(rq.result); rq.onerror = () => ko(rq.error);
+    });
+  }
+  const ptx = (m) => pdb.transaction('pins', m).objectStore('pins');
+  const pAll = () => new Promise((ok, ko) => { const r = ptx('readonly').getAll(); r.onsuccess = () => ok(r.result); r.onerror = () => ko(r.error); });
+  const pPut = (v) => new Promise((ok, ko) => { const r = ptx('readwrite').put(v); r.onsuccess = ok; r.onerror = () => ko(r.error); });
+  const pDel = (id) => new Promise((ok) => { const r = ptx('readwrite').delete(id); r.onsuccess = ok; r.onerror = ok; });
+
+  // foto rimpicciolita: tiene il telefono leggero e non perde nulla di utile
+  async function shrinkPhoto(file) {
+    try {
+      const bmp = await createImageBitmap(file, { imageOrientation: 'from-image' });
+      const k = Math.min(1, 1400 / Math.max(bmp.width, bmp.height));
+      const c = document.createElement('canvas'); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+      c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+      const blob = await new Promise((ok) => c.toBlob(ok, 'image/jpeg', 0.82));
+      if (blob) return { data: await blob.arrayBuffer(), type: 'image/jpeg' };
+    } catch (e) { /* si salva l'originale */ }
+    return { data: await file.arrayBuffer(), type: file.type || 'image/jpeg' };
+  }
+  // posizione: prima un tentativo veloce, poi uno preciso
+  function locate() {
+    return new Promise((ok) => {
+      if (!navigator.geolocation) return ok(null);
+      const fine = () => navigator.geolocation.getCurrentPosition((g) => ok(g), () => ok(null), { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+      navigator.geolocation.getCurrentPosition((g) => ok(g), (e) => { if (e && e.code === 1) ok(null); else fine(); }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 });
+    });
+  }
+  const pinBlob = (p) => new Blob([p.photo], { type: p.ptype || 'image/jpeg' });
+  const when = (ts) => new Date(ts).toLocaleString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+  async function renderPins() {
+    const box = $('#pin-list');
+    if (!pdb) { box.innerHTML = '<div class="t-note">Il salvataggio dei punti non è disponibile in questo browser.</div>'; return; }
+    pinShown = (await pAll()).sort((a, b) => b.ts - a.ts);
+    if (!pinShown.length) { box.innerHTML = '<div class="t-title">I tuoi punti</div><div class="t-note">Nessun punto ancora. Quando vedi qualcosa da ricordare, scatta una foto e salvalo qui.</div>'; return; }
+    box.innerHTML = '<div class="t-title">I tuoi punti (' + pinShown.length + ')</div>' + pinShown.map((p) => {
+      const where = p.lat != null ? 'https://maps.google.com/?q=' + p.lat + ',' + p.lon : '';
+      const route = p.lat != null ? 'https://www.google.com/maps/dir/?api=1&destination=' + p.lat + ',' + p.lon + '&travelmode=walking' : '';
+      return '<div class="pin" data-id="' + p.id + '"><button class="pin-th" data-view="' + p.id + '" aria-label="Apri la foto">' + (p.photo ? '<img alt="" data-pth="' + p.id + '">' : '📌') + '</button>' +
+        '<div class="pin-body"><div class="pin-name">' + esc(p.title || 'Punto senza nome') + '</div>' +
+        '<div class="pin-sub">' + esc(when(p.ts)) + (p.lat == null ? ' · posizione non trovata' : '') + '</div>' + (p.note ? '<div class="pin-sub">' + esc(p.note) + '</div>' : '') +
+        '<div class="pin-btns">' + (where ? '<a class="btn-m btn-dark" href="' + where + '" target="_blank">📍 Maps</a><a class="btn-m btn-yellow" href="' + route + '" target="_blank">🚶 Come arrivare</a>' : '') +
+        '<button class="t-btn ghost small" data-pdel="' + p.id + '">Elimina</button></div></div></div>';
+    }).join('');
+    pinShown.forEach((p) => { const im = $('[data-pth="' + p.id + '"]', box); if (im) im.src = URL.createObjectURL(pinBlob(p)); });
+    $$('[data-view]', box).forEach((b) => b.addEventListener('click', () => {
+      const p = pinShown.find((x) => x.id === b.dataset.view);
+      if (!p || !p.photo) return;
+      $('#viewer-title').textContent = p.title || 'Punto'; $('#viewer-img').src = URL.createObjectURL(pinBlob(p)); $('#viewer').classList.add('open');
+    }));
+    $$('[data-pdel]', box).forEach((b) => b.addEventListener('click', async () => {
+      if (!confirm('Eliminare questo punto dal telefono?')) return;
+      await pDel(b.dataset.pdel); renderPins();
+    }));
+  }
+  function setPinPhoto(file) {
+    if (!file) return;
+    pinImg = file;
+    $('#pin-prev').innerHTML = '<img alt="Anteprima della foto">';
+    $('#pin-prev img').src = URL.createObjectURL(file);
+  }
+  $('#pin-cam').addEventListener('click', () => $('#pin-file-cam').click());
+  $('#pin-gal').addEventListener('click', () => $('#pin-file-gal').click());
+  ['#pin-file-cam', '#pin-file-gal'].forEach((id) => $(id).addEventListener('change', (e) => { setPinPhoto((e.target.files || [])[0]); e.target.value = ''; }));
+  function resetPin() { pinImg = null; $('#pin-prev').innerHTML = ''; $('#pin-title').value = ''; $('#pin-note').value = ''; $('#pin-pos').textContent = 'Posizione: la prendo da sola quando salvi.'; }
+  $('#pin-clear').addEventListener('click', () => { resetPin(); $('#pin-msg').textContent = ''; });
+  $('#pin-save').addEventListener('click', async () => {
+    const msg = $('#pin-msg'), btn = $('#pin-save');
+    if (!pdb) { msg.textContent = 'Il salvataggio non è disponibile in questo browser.'; return; }
+    const title = $('#pin-title').value.trim();
+    if (!title && !pinImg) { msg.textContent = 'Scrivi un nome o scatta una foto.'; return; }
+    btn.disabled = true; msg.textContent = 'Cerco la posizione…'; $('#pin-pos').textContent = 'Cerco la posizione…';
+    const g = await locate();
+    let photo = null, ptype = '';
+    try { if (pinImg) { const s = await shrinkPhoto(pinImg); photo = s.data; ptype = s.type; } } catch (e) { msg.textContent = 'Non riesco a leggere la foto: salvo il punto senza.'; }
+    try {
+      await pPut({ id: newId(), title, note: $('#pin-note').value.trim(), lat: g ? g.coords.latitude : null, lon: g ? g.coords.longitude : null, acc: g ? Math.round(g.coords.accuracy) : null, photo, ptype, ts: Date.now() });
+      msg.textContent = g ? 'Punto salvato con la posizione (precisione circa ' + Math.round(g.coords.accuracy) + ' m).' : 'Punto salvato, ma senza posizione: controlla che la localizzazione sia attiva e permessa.';
+      resetPin();
+    } catch (e) { msg.textContent = 'Non sono riuscito a salvare: ' + ((e && (e.message || e.name)) || 'errore sconosciuto') + '.'; }
+    btn.disabled = false;
+    renderPins();
+  });
+  openPinDb().then((d) => { pdb = d; renderPins(); }).catch(() => renderPins());
+
   // ── Orari del bus 397 (tappa di martedì) ──
   document.addEventListener('click', (e) => {
     const b = e.target.closest('[data-bus]');

@@ -196,7 +196,7 @@
   const altro = document.createElement('div');
   altro.className = 'screen hidden'; altro.id = 's7';
   altro.innerHTML = '<div class="page-title">Altro</div>' +
-    [['doc', '📎', 'Documenti', 'Biglietti, QR, passaporto'], ['nav', '🧭', 'Percorsi', 'Come arrivare a una tappa'],
+    [['doc', '📎', 'Documenti', 'Biglietti, QR, passaporto'], ['pin', '📌', 'Da ricordare', 'Negozi e posti con foto e posizione'], ['nav', '🧭', 'Percorsi', 'Come arrivare a una tappa'],
      ['safe', '🛡️', 'Sicurezza', 'Consigli e numeri utili'], ['info', '📋', 'Info e prenotazioni', 'Trasporti, coffee shop, prenotazioni'], ['crediti', '🖼️', 'Crediti foto e loghi', 'Autori, licenze e fonti']]
       .map((r) => '<button class="menu-row" data-go="' + r[0] + '"><span class="menu-ic">' + r[1] + '</span><span>' + r[2] + '<small>' + r[3] + '</small></span><span class="menu-go">›</span></button>').join('');
   $('#s6').before(altro);
@@ -227,7 +227,7 @@
     .map((r) => '<button class="nav-btn" data-v="' + r[0] + '"><span class="nav-icon">' + r[1] + '</span><span class="nav-label">' + r[2] + '</span></button>').join('');
 
   let lastDay = todayIdx >= 0 ? todayIdx : 0;
-  const TOOLS = ['near', 'spese', 'doc', 'nav', 'safe'];
+  const TOOLS = ['near', 'spese', 'doc', 'pin', 'nav', 'safe'];
 
   function show(id) {
     $$('.screen').forEach((s) => { const on = s.id === id; s.classList.toggle('active', on); s.classList.toggle('hidden', !on); });
