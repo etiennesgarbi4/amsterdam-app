@@ -24,6 +24,25 @@
   const plain = (q) => decodeURIComponent(q.replace(/\+/g, ' '));
   const dir = (from, to, mode) => 'https://www.google.com/maps/dir/?api=1&origin=' + encodeURIComponent(plain(from)) + '&destination=' + encodeURIComponent(plain(to)) + '&travelmode=' + mode;
 
+  const titleCase = (s) => s.replace(/[^A-Za-zÀ-ÿ' ]/g, '').trim().toLowerCase().replace(/(^|\s)(\S)/g, (m, x, y) => x + y.toUpperCase());
+
+  // Riga di spostamento tra due luoghi consecutivi (tappe o quartieri), inserita prima di "before"
+  function connector(prev, cur, toName, before) {
+    if (!(prev && prev.q && cur.q && prev.c && cur.c)) return;
+    const d = distM(prev.c, cur.c), walk = Math.max(1, Math.round((d * 1.3) / 80));
+    const km = d < 1000 ? Math.round(d / 10) * 10 + ' m' : (d / 1000).toFixed(1).replace('.', ',') + ' km';
+    const ferry = /ADAM\+Lookout/.test(prev.q) || /ADAM\+Lookout/.test(cur.q), foot = !ferry && walk <= 30, mv = document.createElement('div');
+    mv.className = 'mv';
+    const badge = ferry ? '⛴️' : foot ? '🚶' : '🚋';
+    const title = ferry ? 'Traghetto gratuito' : foot ? walk + ' min a piedi' : 'Con i mezzi';
+    const sub = ferry ? 'Da Amsterdam Centraal, 5 min di traversata, verso ' + toName : km + ' verso ' + toName;
+    const tip = ferry ? '' : foot ? '' : '<em class="mv-tip">Carta contactless quando sali e quando scendi (check-out)</em>';
+    mv.innerHTML = '<div class="st-rail"><div class="mv-badge ' + (foot ? 'foot' : 'ride') + '">' + badge + '</div></div>' +
+      '<div class="mv-t"><div class="mv-main"><b>' + title + '</b><span>' + sub + '</span>' + tip + '</div>' +
+      '<a href="' + dir(prev.q, cur.q, foot ? 'walking' : 'transit') + '" target="_blank">Indicazioni</a></div>';
+    before.parentNode.insertBefore(mv, before);
+  }
+
   // ── Tappe ──
   const done = new Set(store.get('ams-fatto', []));
   const saveDone = () => store.set('ams-fatto', Array.from(done));
@@ -31,27 +50,24 @@
   $$('.screen').slice(0, 5).forEach((scr, di) => {
     const tappe = $$('.tappa', scr);
     let prev = null;
-    tappe.forEach((t, i) => {
+    const seq = $$('.tappa, .quartiere', scr);
+    seq.forEach((t) => {
+      if (t.classList.contains('quartiere')) {
+        const q0 = qOf(t), c0 = q0 && COORDS[q0] ? COORDS[q0] : null;
+        connector(prev, { q: q0, c: c0 }, titleCase($('.quartiere-title', t).textContent), t);
+        if (q0 && c0) prev = { q: q0, c: c0 };
+        return;
+      }
+      const i = tappe.indexOf(t);
       const n = i + 1, key = 'd' + di + '-' + n;
       const timeEl = $('.tappa-time', t), time = timeEl ? timeEl.textContent.trim() : '';
       const icon = $('.tappa-icon', t);
       const tag = $('.tappa-tag', t), name = $('.tappa-name', t), desc = $('.tappa-desc', t), maps = $('.maps-row', t);
       const q = qOf(t), c = q && COORDS[q] ? COORDS[q] : null;
 
-      // spostamento dalla tappa precedente
-      if (prev && prev.q && q && prev.c && c) {
-        const d = distM(prev.c, c), walk = Math.max(1, Math.round((d * 1.3) / 80));
-        const km = d < 1000 ? Math.round(d / 10) * 10 + ' m' : (d / 1000).toFixed(1).replace('.', ',') + ' km';
-        const mv = document.createElement('div');
-        mv.className = 'mv';
-        const to = $('.tappa-name', t).textContent.split(' – ')[0].trim();
-        const foot = walk <= 25;
-        mv.innerHTML = '<div class="st-rail"><div class="mv-badge ' + (foot ? 'foot' : 'ride') + '">' + (foot ? '🚶' : '🚋') + '</div></div>' +
-          '<div class="mv-t"><div class="mv-main"><b>' + (foot ? walk + ' min a piedi' : 'Con i mezzi') + '</b><span>' + km + ' verso ' + to + '</span>' + (foot ? '' : '<em class="mv-tip">Carta contactless quando sali e quando scendi (check-out)</em>') + '</div>' +
-          '<a href="' + dir(prev.q, q, foot ? 'walking' : 'transit') + '" target="_blank">Indicazioni</a></div>';
-        t.parentNode.insertBefore(mv, t);
-      }
-      prev = { q, c };
+      // spostamento dalla tappa o dal quartiere precedente
+      connector(prev, { q, c }, $('.tappa-name', t).textContent.split(' – ')[0].trim(), t);
+      if (q && c) prev = { q, c };
 
       const timeOk = time && time !== '-';
       t.classList.add('st');
