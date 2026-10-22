@@ -3,7 +3,7 @@
   'use strict';
 
   // Indirizzo del Firebase Realtime Database delle spese (es. https://nome-default-rtdb.firebaseio.com). Vuoto = spese solo su questo telefono.
-  const SYNC_URL = '';
+  const SYNC_URL = 'https://amsterdam-spese-default-rtdb.europe-west1.firebasedatabase.app';
 
   const HOTEL = { name: 'Acostar Hotel', lat: 52.3653, lon: 4.8858, q: 'Acostar Hotel Kerkstraat 45 Amsterdam' };
 
