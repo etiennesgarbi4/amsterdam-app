@@ -199,7 +199,12 @@
     [['doc', '📎', 'Documenti', 'Biglietti, QR, passaporto'], ['pin', '📌', 'Da ricordare', 'Negozi e posti con foto e posizione'], ['nav', '🧭', 'Percorsi', 'Come arrivare a una tappa'],
      ['safe', '🛡️', 'Sicurezza', 'Consigli e numeri utili'], ['info', '📋', 'Info e prenotazioni', 'Trasporti, coffee shop, prenotazioni'], ['crediti', '🖼️', 'Crediti foto e loghi', 'Autori, licenze e fonti']]
       .map((r) => '<button class="menu-row" data-go="' + r[0] + '"><span class="menu-ic">' + r[1] + '</span><span>' + r[2] + '<small>' + r[3] + '</small></span><span class="menu-go">›</span></button>').join('');
-  $('#s6').before(altro);
+  const ver = document.createElement('p');
+  ver.className = 't-note small'; ver.id = 'app-ver'; ver.style.margin = '18px 4px 0';
+  altro.appendChild(ver);
+  // versione dell'app installata sul telefono (serve per sapere se l'aggiornamento è arrivato)
+  if (window.caches && caches.keys) caches.keys().then((k) => { const v = k.filter((x) => /^amsterdam-v/.test(x)).sort().pop(); ver.textContent = v ? 'Versione dell\'app: ' + v.replace('amsterdam-v', '') : ''; }).catch(() => {});
+    $('#s6').before(altro);
   const cred = document.createElement('div');
   cred.className = 'screen hidden'; cred.id = 's8';
   const esc = (x) => String(x || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
