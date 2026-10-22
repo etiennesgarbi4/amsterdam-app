@@ -235,17 +235,25 @@
   $('#near-gps').addEventListener('click', () => {
     if (!navigator.geolocation) { $('#near-pos').textContent = 'Posizione non disponibile su questo dispositivo.'; return; }
     $('#near-pos').textContent = 'Cerco la posizione…';
-    navigator.geolocation.getCurrentPosition(
-      (g) => {
-        const p = { lat: g.coords.latitude, lon: g.coords.longitude };
-        const far = distM(p, HOTEL);
-        setPos(p, far > 25000
-          ? '📍 Posizione attuale, ma sei a ' + Math.round(far / 1000) + ' km da Amsterdam: i risultati qui valgono solo in città. Per provare l\'app usa "Parti dall\'hotel".'
-          : '📍 Posizione attuale');
-      },
-      () => { $('#near-pos').textContent = 'Posizione negata o non trovata. Controlla i permessi di Safari/Chrome oppure parti dall\'hotel.'; },
-      { enableHighAccuracy: true, timeout: 15000, maximumAge: 30000 }
-    );
+    const ok = (g) => {
+      const p = { lat: g.coords.latitude, lon: g.coords.longitude };
+      const far = distM(p, HOTEL);
+      setPos(p, far > 25000
+        ? '📍 Posizione attuale, ma sei a ' + Math.round(far / 1000) + ' km da Amsterdam: i risultati qui valgono solo in città. Per provare l\'app usa "Parti dall\'hotel".'
+        : '📍 Posizione attuale');
+    };
+    const ko = (e) => {
+      const why = e && e.code === 1
+        ? 'Il telefono non ha dato il permesso. Su iPhone: Impostazioni > Privacy e sicurezza > Localizzazione > attiva, poi Siti web di Safari (o l\'app installata) > "Mentre usi l\'app". Su Android: tocca il lucchetto accanto all\'indirizzo in Chrome > Autorizzazioni > Posizione.'
+        : e && e.code === 3 ? 'Il telefono ci mette troppo a trovarti (succede al chiuso). Riprova all\'aperto, oppure usa "Parti dall\'hotel".'
+        : 'Il telefono non riesce a darmi la posizione. Controlla che la localizzazione sia accesa, oppure usa "Parti dall\'hotel".';
+      $('#near-pos').textContent = why;
+    };
+    // prima con precisione normale e rete (veloce anche al chiuso), poi non serve altro
+    navigator.geolocation.getCurrentPosition(ok, (e) => {
+      if (e && e.code === 1) return ko(e);
+      navigator.geolocation.getCurrentPosition(ok, ko, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
+    }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 });
   });
   $('#near-hotel').addEventListener('click', () => setPos({ lat: HOTEL.lat, lon: HOTEL.lon }, '🏨 Partenza: ' + HOTEL.name));
   renderChips();
