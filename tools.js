@@ -7,6 +7,7 @@
 
   const DEFAULT_PEOPLE = 'Etienne, Fabiana, Checca, Irene';
   const DEFAULT_TRIP = 'ams-098ca9ac';
+  const ADMIN = 'Etienne';   // solo chi sceglie questo nome vede il pulsante per eliminare le spese
 
   const HOTEL = { name: 'Acostar Hotel', lat: 52.3653, lon: 4.8858, q: 'Acostar Hotel Kerkstraat 45 Amsterdam' };
 
@@ -347,7 +348,7 @@
       '<div class="t-card"><div class="t-title">Spese registrate (' + ex.length + ')</div>' +
       (ex.length ? ex.map((e) => '<div class="exp"><div class="place-ic">' + (CAT_IC[e.cat] || '🧾') + '</div><div class="exp-body"><div class="exp-desc">' + esc(e.desc || e.cat) + '</div><div class="exp-sub">' +
         esc(e.payer) + ' ha pagato · ' + new Date(e.ts).toLocaleString('it-IT', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) + ' · tra ' + e.who.length +
-        '</div></div><div class="exp-amt">' + eur(e.amount) + '</div><button class="x-btn" data-del="' + e.id + '" aria-label="Elimina">✕</button></div>').join('') : '<div class="t-note">Nessuna spesa ancora.</div>') + '</div>' +
+        '</div></div><div class="exp-amt">' + eur(e.amount) + '</div>' + (S.me === ADMIN ? '<button class="x-btn" data-del="' + e.id + '" aria-label="Elimina">✕</button>' : '') + '</div>').join('') : '<div class="t-note">Nessuna spesa ancora.</div>') + '</div>' +
 
       '<details class="t-card"><summary class="t-title">Impostazioni</summary>' +
       '<label class="t-label">SONO</label><select class="t-select" id="sp-me">' + S.people.map((p) => '<option' + (p === S.me ? ' selected' : '') + '>' + esc(p) + '</option>').join('') + '</select>' +
