@@ -7,9 +7,10 @@
   const COORDS = window.AMS_COORDS || {};
   const IMG = window.AMS_IMG || {};
   // Tappe e quartieri che hanno un'immagine al posto dell'icona
-  const TAPPA_IMG = [['Canali Kerkstraat', 'bloemenmarkt'], ['Heineken Experience', 'heineken'], ['Van Gogh Museum', 'vangogh'], ['Moco Museum', 'moco'], ['Halloween a Rembrandtplein', 'rembrandtplein'], ["A'DAM Lookout", 'adam'], ['Waterlooplein', 'waterlooplein'], ["Brouwerij 't IJ", 'brouwerij'], ['Acostar Hotel', 'acostar'], ['Check-in e riposo', 'acostar'], ['Boerejongens', 'boerejongens'], ['Atterraggio a Schiphol', 'schiphol'], ['Bus 397', 'schiphol'], ['Albert Heijn', 'albertheijn'], ['SmokeBoat', 'smokeboat'], ['Dampkring', 'dampkring'], ['Paradox', 'paradox'], ['The Bulldog', 'bulldoggreenhouse'], ['Tha Dogg House', 'doggohouse'], ['Café Hill Street Blues', 'hillstreetblues'], ["Barney's", 'barneyswed'], ['Jazz Café Alto', 'jazzalto'], ['Tyson 2.0', 'tyson']];
+  const TAPPA_IMG = [['Canali Kerkstraat', 'bloemenmarkt'], ['Heineken Experience', 'heineken'], ['Van Gogh Museum', 'vangogh'], ['Moco Museum', 'moco'], ['Halloween a Rembrandtplein', 'rembrandtplein'], ["A'DAM Lookout", 'adam'], ['Waterlooplein', 'waterlooplein'], ["Brouwerij 't IJ", 'brouwerij'], ['Acostar Hotel', 'acostar'], ['Check-in e riposo', 'acostar'], ['Boerejongens', 'boerejongens'], ['Atterraggio a Schiphol', 'schiphol'], ['Bus 397', 'schiphol'], ['Albert Heijn', 'albertheijn'], ['SmokeBoat', 'smokeboat'], ['Dampkring', 'dampkring'], ['Paradox', 'paradox'], ['The Bulldog', 'bulldog+greenhouse'], ['Tha Dogg House', 'doggohouse'], ['Café Hill Street Blues', 'hillstreetblues'], ["Barney's", 'barneys+swed'], ['Jazz Café Alto', 'jazzalto'], ['Tyson 2.0', 'tyson']];
   const QUARTIERE_IMG = { 'DE PIJP': 'albertcuyp', 'JORDAAN': 'jordaan', 'VONDELPARK': 'vondelpark', 'RED LIGHT DISTRICT': 'redlight', 'CENTRO STORICO': 'dam' };
-  const imgTag = (k, cls) => (IMG[k] ? '<img class="' + (cls || '') + '" src="' + IMG[k].src + '" alt="" loading="lazy">' : '');
+  const one = (k) => '<img src="' + IMG[k].src + '" alt="" loading="lazy">';
+  const imgTag = (k, cls) => (k.indexOf('+') > 0 ? k.split('+').map((x) => '<span class="sq">' + one(x) + '</span>').join('') : IMG[k] ? '<img class="' + (cls || '') + '" src="' + IMG[k].src + '" alt="" loading="lazy">' : '');
   const HOTEL_Q = 'Acostar+Hotel+Kerkstraat+45+Amsterdam';
 
   const $ = (s, r) => (r || document).querySelector(s);
@@ -102,7 +103,7 @@
         '<div class="st-rail"><div class="st-pin">' + n + '</div></div>' +
         '<div class="st-card"><div class="st-top">' + (timeOk ? '<span class="st-time">' + time + '</span>' : '') +
         '<span class="st-tag"></span><label class="st-done"><input type="checkbox"' + (done.has(key) ? ' checked' : '') + '> Fatto</label></div>' +
-        '<div class="st-main"><div class="st-text"></div><div class="st-ic ' + (icon ? icon.className.replace('tappa-icon', '').trim() : 'ic-default') + (pic ? ' has-img' : '') + '">' + (pic || (icon ? icon.textContent : '')) + '</div></div></div>';
+        '<div class="st-main"><div class="st-text"></div><div class="st-ic ' + (icon ? icon.className.replace('tappa-icon', '').trim() : 'ic-default') + (pic ? ' has-img' + (pic.indexOf('class="sq"') > 0 ? ' dual' : '') : '') + '">' + (pic || (icon ? icon.textContent : '')) + '</div></div></div>';
       if (tag) $('.st-tag', t).replaceWith(tag); else $('.st-tag', t).remove();
       const text = $('.st-text', t);
       text.appendChild(name); text.appendChild(desc);
