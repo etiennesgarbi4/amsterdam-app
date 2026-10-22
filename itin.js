@@ -33,16 +33,23 @@
     const d = distM(prev.c, cur.c), walk = Math.max(1, Math.round((d * 1.3) / 80));
     const km = d < 1000 ? Math.round(d / 10) * 10 + ' m' : (d / 1000).toFixed(1).replace('.', ',') + ' km';
     const ferry = /ADAM\+Lookout/.test(prev.q) || /ADAM\+Lookout/.test(cur.q), foot = !ferry && walk <= 30, mv = document.createElement('div');
+    const alt = !ferry && d > 500;   // oltre 500 m si propongono entrambe le opzioni: a piedi e tram o bus
     mv.className = 'mv';
     const badge = ferry ? '⛴️' : foot ? '🚶' : '🚋';
     const title = ferry ? 'Traghetto gratuito' : foot ? walk + ' min a piedi' : 'Con i mezzi';
     const sub = ferry
       ? (fromHotel ? 'Dall\'hotel a Centraal (a piedi o in tram), poi traghetto di 5 min, verso ' + toName : 'Da Amsterdam Centraal, 5 min di traversata, verso ' + toName)
       : km + (fromHotel ? ' dall\'hotel verso ' : ' verso ') + toName;
-    const tip = ferry ? (fromHotel ? '<em class="mv-tip">Se prendi il tram: carta quando sali e quando scendi (check-out). Il traghetto è gratuito</em>' : '') : foot ? '' : '<em class="mv-tip">Carta contactless quando sali e quando scendi (check-out)</em>';
+    const card = 'carta contactless quando sali e quando scendi (check-out)';
+    const tip = ferry ? (fromHotel ? '<em class="mv-tip">Se prendi il tram: ' + card + '. Il traghetto è gratuito</em>' : '')
+      : foot ? (alt ? '<em class="mv-tip">Oppure tram o bus: ' + card + '</em>' : '')
+      : '<em class="mv-tip">' + card.charAt(0).toUpperCase() + card.slice(1) + '</em>';
+    const link = (mode, text, cls) => '<a class="' + (cls || '') + '" href="' + dir(prev.q, cur.q, mode) + '" target="_blank">' + text + '</a>';
+    const btns = alt
+      ? (foot ? link('walking', '🚶 A piedi') + link('transit', '🚋 Tram o bus', 'alt') : link('transit', '🚋 Tram o bus') + link('walking', '🚶 A piedi', 'alt'))
+      : link(ferry ? 'transit' : 'walking', 'Indicazioni');
     mv.innerHTML = '<div class="st-rail"><div class="mv-badge ' + (foot ? 'foot' : 'ride') + '">' + badge + '</div></div>' +
-      '<div class="mv-t"><div class="mv-main"><b>' + title + '</b><span>' + sub + '</span>' + tip + '</div>' +
-      '<a href="' + dir(prev.q, cur.q, foot ? 'walking' : 'transit') + '" target="_blank">Indicazioni</a></div>';
+      '<div class="mv-t' + (alt ? ' two' : '') + '"><div class="mv-main"><b>' + title + '</b><span>' + sub + '</span>' + tip + '</div><div class="mv-btns">' + btns + '</div></div>';
     before.parentNode.insertBefore(mv, before);
   }
 
