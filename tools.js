@@ -260,6 +260,32 @@
       navigator.geolocation.getCurrentPosition(ok, ko, { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 });
     }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 120000 });
   });
+  // indirizzo scritto a mano (serve la rete): la ricerca usa il servizio di OpenStreetMap
+  async function findAddr() {
+    const q = ($('#near-addr').value || '').trim(), box = $('#near-addr-res');
+    if (q.length < 3) { box.innerHTML = '<div class="t-note small t-gap">Scrivi almeno tre lettere.</div>'; return; }
+    box.innerHTML = '<div class="t-note small t-gap">Cerco…</div>';
+    try {
+      const full = /amsterdam/i.test(q) ? q : q + ', Amsterdam';
+      const u = 'https://nominatim.openstreetmap.org/search?format=jsonv2&limit=5&countrycodes=nl&accept-language=it&viewbox=4.72,52.43,5.03,52.28&q=' + encodeURIComponent(full);
+      const res = await fetch(u);
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const raw = await res.json(), seen = new Set();
+      const nice = (r) => { const p = r.display_name.split(',').map((x) => x.trim()); return (/^\d/.test(p[0]) && p[1] ? p[1] + ' ' + p[0] : p[0]) + (p[2] ? ', ' + p[2] : ''); };
+      const list = raw.filter((r) => { const k = nice(r); if (seen.has(k)) return false; seen.add(k); return true; });
+      if (!list.length) { box.innerHTML = '<div class="t-note small t-gap">Non trovo niente. Prova con via e numero civico, per esempio "Prinsengracht 263".</div>'; return; }
+      box.innerHTML = '<div class="t-gap">' + list.map((r, i) => '<button class="t-btn ghost addr-res" data-i="' + i + '">' + esc(nice(r)) + '</button>').join('') + '</div>';
+      $$('.addr-res', box).forEach((b) => b.addEventListener('click', () => {
+        const r = list[Number(b.dataset.i)];
+        setPos({ lat: Number(r.lat), lon: Number(r.lon) }, '📍 Parti da: ' + nice(r));
+        box.innerHTML = '';
+      }));
+    } catch (e) {
+      box.innerHTML = '<div class="t-note small t-gap">Per cercare un indirizzo serve la connessione a internet. Riprova quando sei online.</div>';
+    }
+  }
+  $('#near-find').addEventListener('click', findAddr);
+  $('#near-addr').addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); findAddr(); } });
   $('#near-hotel').addEventListener('click', () => setPos({ lat: HOTEL.lat, lon: HOTEL.lon }, '🏨 Partenza: ' + HOTEL.name));
   renderChips();
   loadNear();
