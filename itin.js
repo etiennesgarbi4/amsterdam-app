@@ -5,6 +5,11 @@
   const TRIP_DAYS = ['2026-10-30', '2026-10-31', '2026-11-01', '2026-11-02', '2026-11-03'];
   const DAY_CHIP = [['Ven', 30], ['Sab', 31], ['Dom', 1], ['Lun', 2], ['Mar', 3]];
   const COORDS = window.AMS_COORDS || {};
+  const IMG = window.AMS_IMG || {};
+  // Tappe e quartieri che hanno un'immagine al posto dell'icona
+  const TAPPA_IMG = [['Canali Kerkstraat', 'bloemenmarkt'], ['Heineken Experience', 'heineken'], ['Van Gogh Museum', 'vangogh'], ['Moco Museum', 'moco'], ['Halloween a Rembrandtplein', 'rembrandtplein'], ["A'DAM Lookout", 'adam'], ['Waterlooplein', 'waterlooplein'], ["Brouwerij 't IJ", 'brouwerij']];
+  const QUARTIERE_IMG = { 'DE PIJP': 'albertcuyp', 'JORDAAN': 'jordaan', 'VONDELPARK': 'vondelpark', 'RED LIGHT DISTRICT': 'redlight', 'CENTRO STORICO': 'dam' };
+  const imgTag = (k, cls) => (IMG[k] ? '<img class="' + (cls || '') + '" src="' + IMG[k].src + '" alt="" loading="lazy">' : '');
   const HOTEL_Q = 'Acostar+Hotel+Kerkstraat+45+Amsterdam';
 
   const $ = (s, r) => (r || document).querySelector(s);
@@ -71,6 +76,8 @@
     seq.forEach((t) => {
       if (t.classList.contains('quartiere')) {
         const q0 = qOf(t), c0 = q0 && COORDS[q0] ? COORDS[q0] : null;
+        const em = $('.quartiere-emoji', t), tt = $('.quartiere-title', t).textContent.replace(/[^A-Za-z ]/g, '').trim(), ik = QUARTIERE_IMG[tt];
+        if (em && ik && IMG[ik]) em.innerHTML = imgTag(ik);
         connector(prev, { q: q0, c: c0 }, titleCase($('.quartiere-title', t).textContent), t);
         if (q0 && c0) prev = { q: q0, c: c0 };
         return;
@@ -86,6 +93,7 @@
       connector(prev, { q, c }, $('.tappa-name', t).textContent.split(' – ')[0].trim(), t);
       if (q && c) prev = { q, c };
 
+      const nomeT = name ? name.textContent.trim() : '', hit = TAPPA_IMG.find((x) => nomeT.indexOf(x[0]) === 0), pic = hit ? imgTag(hit[1]) : '';
       const timeOk = time && time !== '-';
       t.classList.add('st');
       if (i === tappe.length - 1) t.classList.add('last');
@@ -94,7 +102,7 @@
         '<div class="st-rail"><div class="st-pin">' + n + '</div></div>' +
         '<div class="st-card"><div class="st-top">' + (timeOk ? '<span class="st-time">' + time + '</span>' : '') +
         '<span class="st-tag"></span><label class="st-done"><input type="checkbox"' + (done.has(key) ? ' checked' : '') + '> Fatto</label></div>' +
-        '<div class="st-main"><div class="st-text"></div><div class="st-ic ' + (icon ? icon.className.replace('tappa-icon', '').trim() : 'ic-default') + '">' + (icon ? icon.textContent : '') + '</div></div></div>';
+        '<div class="st-main"><div class="st-text"></div><div class="st-ic ' + (icon ? icon.className.replace('tappa-icon', '').trim() : 'ic-default') + (pic ? ' has-img' : '') + '">' + (pic || (icon ? icon.textContent : '')) + '</div></div></div>';
       if (tag) $('.st-tag', t).replaceWith(tag); else $('.st-tag', t).remove();
       const text = $('.st-text', t);
       text.appendChild(name); text.appendChild(desc);
@@ -174,10 +182,17 @@
   altro.className = 'screen hidden'; altro.id = 's7';
   altro.innerHTML = '<div class="page-title">Altro</div>' +
     [['doc', '📎', 'Documenti', 'Biglietti, QR, passaporto'], ['nav', '🧭', 'Percorsi', 'Come arrivare a una tappa'],
-     ['safe', '🛡️', 'Sicurezza', 'Consigli e numeri utili'], ['info', '📋', 'Info e prenotazioni', 'Trasporti, coffee shop, prenotazioni']]
+     ['safe', '🛡️', 'Sicurezza', 'Consigli e numeri utili'], ['info', '📋', 'Info e prenotazioni', 'Trasporti, coffee shop, prenotazioni'], ['crediti', '🖼️', 'Crediti foto e loghi', 'Autori, licenze e fonti']]
       .map((r) => '<button class="menu-row" data-go="' + r[0] + '"><span class="menu-ic">' + r[1] + '</span><span>' + r[2] + '<small>' + r[3] + '</small></span><span class="menu-go">›</span></button>').join('');
   $('#s6').before(altro);
-  [$('#s5'), $('#s6')].forEach((s) => {
+  const cred = document.createElement('div');
+  cred.className = 'screen hidden'; cred.id = 's8';
+  const esc = (x) => String(x || '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  cred.innerHTML = '<div class="page-title">Crediti</div><p class="t-note" style="margin-bottom:12px">Le miniature dei luoghi vengono da Wikimedia Commons (con licenza libera, citata qui sotto) o da siti esterni. Loghi e immagini di terzi restano dei rispettivi titolari e servono solo a riconoscere il luogo.</p>' +
+    Object.keys(IMG).map((k) => { const m = IMG[k]; const host = (m.fonte.match(/^https?:\/\/([^/]+)/) || [])[1] || '';
+      return '<div class="cr"><img src="' + m.src + '" alt=""><div><b>' + esc(m.luogo) + '</b><br><span>' + (m.autore ? 'Foto: ' + esc(m.autore) + ' · ' : '') + esc(m.licenza) + '</span><br><a href="' + esc(m.fonte) + '" target="_blank">' + esc(host) + '</a></div></div>'; }).join('');
+  $('#s6').before(cred);
+  [$('#s5'), $('#s6'), cred].forEach((s) => {
     const b = document.createElement('button');
     b.className = 'back-link'; b.textContent = '‹ Altro';
     b.addEventListener('click', () => go('altro'));
@@ -207,6 +222,7 @@
     if (typeof view === 'number') { day = view; view = 'day'; }
     if (view === 'day') { day = day == null ? lastDay : day; lastDay = day; screen = 's' + day; navKey = 'day'; }
     else if (view === 'altro') { screen = 's7'; navKey = 'altro'; }
+    else if (view === 'crediti') { screen = 's8'; navKey = 'altro'; }
     else if (view === 'info') { screen = 's5'; navKey = 'altro'; }
     else if (TOOLS.includes(view)) { screen = 's6'; navKey = view === 'near' || view === 'spese' ? view : 'altro'; }
     else return;

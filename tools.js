@@ -37,6 +37,8 @@
     { n: "A'DAM Lookout", ic: '🎡', lat: 52.3838, lon: 4.9021, t: 'Panorama e altalena', d: 'La torre con la vista a 360° sulla città, ad Amsterdam Nord, raggiungibile con il traghetto gratuito. C\'è anche l\'altalena Over The Edge a 100 metri.', c: 'Il tuo biglietto è già preso: €28 con drink e VR Rollercoaster. L\'altalena costa extra.' },
   ];
 
+  // Luoghi con miniatura (stesse chiavi di AMS_IMG)
+  const FAMOUS_IMG = { 'Van Gogh Museum': 'vangogh', 'Moco Museum': 'moco', 'Heineken Experience': 'heineken', "A'DAM Lookout": 'adam', 'Rembrandtplein': 'rembrandtplein', 'Vondelpark': 'vondelpark', 'Bloemenmarkt': 'bloemenmarkt', 'Dam e Palazzo Reale': 'dam', 'Begijnhof': 'begijnhof', 'Magere Brug': 'magerebrug', 'Oude Kerk': 'oudekerk', 'Albert Cuyp Market': 'albertcuyp', 'Amsterdam Centraal': 'centraal', 'De Wallen': 'redlight', 'Westerkerk e Jordaan': 'jordaan' };
   const DAY_SHORT = ['Ven 30 ott', 'Sab 31 ott', 'Dom 1 nov', 'Lun 2 nov', 'Mar 3 nov'];
   const DAY_MINI = ['Ven 30', 'Sab 31', 'Dom 1', 'Lun 2', 'Mar 3'];
   const WHEN = {
@@ -169,7 +171,7 @@
     if (p.info) btns.push('<a class="btn-m btn-outline" href="' + gsearch(p.n + ' Amsterdam') + '" target="_blank">Cos\'è? Cerca su Google</a>');
     if (btns.length) more.push('<div class="maps-row">' + btns.join('') + '</div>');
     const has = more.length > 0;
-    return '<div class="place-wrap"><div class="place"><div class="place-ic">' + p.ic + '</div>' +
+    return '<div class="place-wrap"><div class="place"><div class="place-ic">' + (p.img && window.AMS_IMG && window.AMS_IMG[p.img] ? '<img src="' + window.AMS_IMG[p.img].src + '" alt="" loading="lazy">' : p.ic) + '</div>' +
       (has ? '<button class="place-body" aria-expanded="false">' : '<div class="place-body">') +
       '<div class="place-name">' + esc(p.n) + (has ? ' <span class="chev" aria-hidden="true">▾</span>' : '') + '</div><div class="place-sub">' + esc(p.t || '') + '</div>' +
       (days.length ? '<div class="when">Ci andiamo: ' + days.map((i) => DAY_MINI[i]).join(' e ') + '</div>' : '') +
@@ -192,7 +194,7 @@
     const out = $('#near-out');
     if (!pos) { out.innerHTML = '<div class="t-note">Premi "Usa la mia posizione" oppure "Parti dall\'hotel".</div>'; return; }
     if (nearCat === 'famosi') {
-      const list = FAMOUS.map((p) => Object.assign({}, p, { d0: distM(pos, p), q: p.n + ' Amsterdam', g: WHEN[p.n] || [] })).sort((a, b) => a.d0 - b.d0);
+      const list = FAMOUS.map((p) => Object.assign({}, p, { d0: distM(pos, p), q: p.n + ' Amsterdam', g: WHEN[p.n] || [], img: FAMOUS_IMG[p.n] || '' })).sort((a, b) => a.d0 - b.d0);
       out.innerHTML = '<div class="t-note small" style="margin-bottom:6px">Tocca un luogo per leggere cos\'è e quanto costa. I prezzi sono indicativi: controlla sempre il sito prima di andare.</div>' + list.map(placeRow).join('');
       bindRows(out);
       return;
