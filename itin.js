@@ -113,7 +113,7 @@
   }
 
   // ── Intestazione e barra dei giorni ──
-  const XXX = '<svg class="xxx" viewBox="0 0 52 14" aria-hidden="true"><g stroke="#fff" stroke-width="3.4"><path d="M1.5 1.5 12.5 12.5M12.5 1.5 1.5 12.5"/><path d="M19.5 1.5 30.5 12.5M30.5 1.5 19.5 12.5" transform="translate(-1 0)"/><path d="M37.5 1.5 48.5 12.5M48.5 1.5 37.5 12.5" transform="translate(-1 0)"/></g></svg>';
+  const XXX = '<svg class="xxx" viewBox="0 0 52 14" aria-hidden="true"><g stroke="#000" stroke-width="3.4"><path d="M1.5 1.5 12.5 12.5M12.5 1.5 1.5 12.5"/><path d="M19.5 1.5 30.5 12.5M30.5 1.5 19.5 12.5" transform="translate(-1 0)"/><path d="M37.5 1.5 48.5 12.5M48.5 1.5 37.5 12.5" transform="translate(-1 0)"/></g></svg>';
   const header = $('.app-header');
   const todayIso = iso(new Date());
   const todayIdx = TRIP_DAYS.indexOf(todayIso);
