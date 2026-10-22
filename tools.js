@@ -30,12 +30,22 @@
     { n: 'Hortus Botanicus', ic: '🌿', lat: 52.3668, lon: 4.9078, t: 'Orto botanico', d: 'Uno dei più antichi orti botanici del mondo, fondato nel 1638. Ha una serra tropicale e piante da tutto il pianeta.', c: 'circa €14-15; si paga solo con carta.' },
     { n: 'Rembrandthuis', ic: '🖌️', lat: 52.3694, lon: 4.9013, t: 'Casa museo', d: 'La casa dove Rembrandt visse e lavorò per circa vent\'anni. È arredata come ai suoi tempi, con dimostrazioni di incisione.', c: 'circa €19,50, con prenotazione a orario (prezzo da confermare).' },
     { n: 'Nieuwmarkt', ic: '🏰', lat: 52.3726, lon: 4.9003, t: 'Piazza con la Waag', d: 'Piazza con la Waag, un edificio del 1488 che era una porta delle mura. Oggi ci sono caffè e, in certi giorni, un mercato.', c: 'Gratuito.' },
-    { n: 'Oude Kerk', ic: '⛪', lat: 52.3744, lon: 4.8981, t: 'Chiesa più antica', d: 'La chiesa più antica della città, del 1306, in mezzo al quartiere a luci rosse. Dentro ci sono vetrate, la tomba di Saskia (moglie di Rembrandt) e mostre d\'arte.', c: 'circa €14-14,50; con la torre circa €22 (la torre si visita da aprile a ottobre).' },
+    { n: 'Oude Kerk', ic: '⛪', lat: 52.3744, lon: 4.8981, t: 'Chiesa più antica', d: 'La chiesa più antica della città, fondata nel 1213 e consacrata nel 1306, in mezzo al quartiere a luci rosse. Dentro ci sono vetrate, la tomba di Saskia (moglie di Rembrandt) e mostre d\'arte.', c: 'circa €14-14,50; con la torre circa €22 (la torre si visita da aprile a ottobre).' },
     { n: 'De Wallen', ic: '🚦', lat: 52.3734, lon: 4.8983, t: 'Quartiere a Luci Rosse', d: 'Il centro più antico della città e il quartiere a luci rosse, con vicoli, canali e coffee shop. Di giorno è tranquillo, la sera molto affollato.', c: 'Gratuito. Vietato fotografare le vetrine.' },
     { n: 'Amsterdam Centraal', ic: '🚉', lat: 52.3789, lon: 4.9006, t: 'Stazione e traghetti per il Nord', d: 'La stazione principale, in mattoni neogotici. Da qui partono i treni per Schiphol e i traghetti gratuiti per Amsterdam Nord.', c: 'Stazione e traghetto gratuiti; il treno si paga a parte.' },
     { n: 'NEMO Science Museum', ic: '🔬', lat: 52.3739, lon: 4.9121, t: 'Museo, terrazza panoramica', d: 'Museo della scienza con esperimenti da toccare, in un edificio a forma di nave. Sul tetto c\'è una grande terrazza con vista sul porto.', c: 'circa €21,50; la terrazza sul tetto dovrebbe essere gratuita (da verificare).' },
     { n: "A'DAM Lookout", ic: '🎡', lat: 52.3838, lon: 4.9021, t: 'Panorama e altalena', d: 'La torre con la vista a 360° sulla città, ad Amsterdam Nord, raggiungibile con il traghetto gratuito. C\'è anche l\'altalena Over The Edge a 100 metri.', c: 'Il tuo biglietto è già preso: €28 con drink e VR Rollercoaster. L\'altalena costa extra.' },
   ];
+
+  const DAY_SHORT = ['Ven 30 ott', 'Sab 31 ott', 'Dom 1 nov', 'Lun 2 nov', 'Mar 3 nov'];
+  const DAY_MINI = ['Ven 30', 'Sab 31', 'Dom 1', 'Lun 2', 'Mar 3'];
+  const WHEN = {
+    'Bloemenmarkt': [0], 'Heineken Experience': [0], 'Albert Cuyp Market': [0], 'Leidseplein': [0, 4],
+    'Van Gogh Museum': [1], 'Moco Museum': [1], 'Rembrandtplein': [1],
+    'Vondelpark': [2], 'De 9 Straatjes': [2], 'Westerkerk e Jordaan': [2], 'De Wallen': [2], 'Oude Kerk': [2],
+    'Dam e Palazzo Reale': [3], 'Begijnhof': [3], 'Magere Brug': [3], "A'DAM Lookout": [3],
+    'Amsterdam Centraal': [1, 3], 'Nieuwmarkt': [4],
+  };
 
   const CATS = {
     cibo:   { l: '🍽️ Mangiare',   r: 600,  f: ['[amenity~"^(restaurant|fast_food|cafe)$"]'], ic: '🍽️' },
@@ -93,7 +103,9 @@
   // Riga di un luogo; se ha dettagli (descrizione, costo, menù) si apre con un tocco
   function placeRow(p) {
     const more = [];
+    const days = p.g || [];
     if (p.d) more.push('<p>' + esc(p.d) + '</p>');
+    if (days.length) more.push('<p class="pm-line"><b>Nel programma:</b> ' + days.map((i) => DAY_SHORT[i]).join(' e ') + '</p>');
     if (p.kind) more.push('<p class="pm-line"><b>Tipo:</b> ' + esc(p.kind) + '</p>');
     if (p.cuisine) more.push('<p class="pm-line"><b>Cucina:</b> ' + esc(p.cuisine) + '</p>');
     if (p.c) more.push('<p class="pm-line"><b>Costo:</b> ' + esc(p.c) + '</p>');
@@ -101,17 +113,20 @@
     const btns = [];
     if (p.menu) btns.push('<a class="btn-m btn-yellow" href="' + gsearch(p.n + ' Amsterdam menu') + '" target="_blank">Menù su Google</a>');
     if (p.web) btns.push('<a class="btn-m btn-yellow" href="' + esc(p.web) + '" target="_blank">Sito ufficiale</a>');
+    days.forEach((i) => btns.push('<a class="btn-m btn-yellow" href="#" data-day="' + i + '">Apri ' + DAY_SHORT[i] + '</a>'));
     if (p.info) btns.push('<a class="btn-m btn-outline" href="' + gsearch(p.n + ' Amsterdam') + '" target="_blank">Cos\'è? Cerca su Google</a>');
     if (btns.length) more.push('<div class="maps-row">' + btns.join('') + '</div>');
     const has = more.length > 0;
     return '<div class="place-wrap"><div class="place"><div class="place-ic">' + p.ic + '</div>' +
       (has ? '<button class="place-body" aria-expanded="false">' : '<div class="place-body">') +
       '<div class="place-name">' + esc(p.n) + (has ? ' <span class="chev" aria-hidden="true">▾</span>' : '') + '</div><div class="place-sub">' + esc(p.t || '') + '</div>' +
+      (days.length ? '<div class="when">Ci andiamo: ' + days.map((i) => DAY_MINI[i]).join(' e ') + '</div>' : '') +
       (has ? '</button>' : '</div>') +
       '<div class="place-dist">' + fmtDist(p.d0) + '</div><a class="btn-m btn-outline" href="' + mapsPlace(p.lat, p.lon, p.q) + '" target="_blank">Maps</a></div>' +
       (has ? '<div class="place-more" hidden>' + more.join('') + '</div>' : '') + '</div>';
   }
   function bindRows(box) {
+    $$('a[data-day]', box).forEach((a) => a.addEventListener('click', (e) => { e.preventDefault(); if (typeof go === 'function') go(+a.dataset.day); }));
     $$('button.place-body', box).forEach((b) => b.addEventListener('click', () => {
       const wrap = b.closest('.place-wrap'), more = wrap.querySelector('.place-more');
       const open = more.hidden;
@@ -125,7 +140,7 @@
     const out = $('#near-out');
     if (!pos) { out.innerHTML = '<div class="t-note">Premi "Usa la mia posizione" oppure "Parti dall\'hotel".</div>'; return; }
     if (nearCat === 'famosi') {
-      const list = FAMOUS.map((p) => Object.assign({}, p, { d0: distM(pos, p), q: p.n + ' Amsterdam' })).sort((a, b) => a.d0 - b.d0);
+      const list = FAMOUS.map((p) => Object.assign({}, p, { d0: distM(pos, p), q: p.n + ' Amsterdam', g: WHEN[p.n] || [] })).sort((a, b) => a.d0 - b.d0);
       out.innerHTML = '<div class="t-note small" style="margin-bottom:6px">Tocca un luogo per leggere cos\'è e quanto costa. I prezzi sono indicativi: controlla sempre il sito prima di andare.</div>' + list.map(placeRow).join('');
       bindRows(out);
       return;

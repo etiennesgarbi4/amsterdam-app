@@ -116,3 +116,5 @@ button.place-body {
 .place-more p { margin: 0 0 6px; font-size: 13px; line-height: 1.5; color: var(--text2); }
 .place-more .pm-line b { color: var(--text); font-weight: 700; }
 .place-more .maps-row { margin-top: 8px; }
+
+.when { display: inline-block; margin-top: 4px; background: rgba(236,0,0,.10); color: var(--accent); font-weight: 700; font-size: 12px; padding: 2px 9px; border-radius: 10px; line-height: 1.35; }
