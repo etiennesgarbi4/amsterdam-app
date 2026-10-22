@@ -7,7 +7,7 @@
   const COORDS = window.AMS_COORDS || {};
   const IMG = window.AMS_IMG || {};
   // Tappe e quartieri che hanno un'immagine al posto dell'icona
-  const TAPPA_IMG = [['Canali Kerkstraat', 'bloemenmarkt'], ['Heineken Experience', 'heineken'], ['Van Gogh Museum', 'vangogh'], ['Moco Museum', 'moco'], ['Halloween a Rembrandtplein', 'rembrandtplein'], ["A'DAM Lookout", 'adam'], ['Waterlooplein', 'waterlooplein'], ["Brouwerij 't IJ", 'brouwerij'], ['Acostar Hotel', 'acostar'], ['Check-in e riposo', 'acostar'], ['Boerejongens', 'boerejongens']];
+  const TAPPA_IMG = [['Canali Kerkstraat', 'bloemenmarkt'], ['Heineken Experience', 'heineken'], ['Van Gogh Museum', 'vangogh'], ['Moco Museum', 'moco'], ['Halloween a Rembrandtplein', 'rembrandtplein'], ["A'DAM Lookout", 'adam'], ['Waterlooplein', 'waterlooplein'], ["Brouwerij 't IJ", 'brouwerij'], ['Acostar Hotel', 'acostar'], ['Check-in e riposo', 'acostar'], ['Boerejongens', 'boerejongens'], ['Atterraggio a Schiphol', 'schiphol'], ['Bus 397', 'schiphol']];
   const QUARTIERE_IMG = { 'DE PIJP': 'albertcuyp', 'JORDAAN': 'jordaan', 'VONDELPARK': 'vondelpark', 'RED LIGHT DISTRICT': 'redlight', 'CENTRO STORICO': 'dam' };
   const imgTag = (k, cls) => (IMG[k] ? '<img class="' + (cls || '') + '" src="' + IMG[k].src + '" alt="" loading="lazy">' : '');
   const HOTEL_Q = 'Acostar+Hotel+Kerkstraat+45+Amsterdam';
