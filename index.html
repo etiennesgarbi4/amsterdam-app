@@ -1167,9 +1167,10 @@ body::before {
       </div>
       <div class="tappa-content">
         <div class="tappa-name">Bus 397 → Schiphol</div>
-        <div class="tappa-desc">Fermata a Leidseplein, bus 397 direzione Schiphol. ~30 min. <strong>Check-out:</strong> appoggia la carta sul lettore anche quando scendi, altrimenti l'addebito è più alto. <strong>Volo alle 21:20</strong>: partendo alle 18:30 arrivi a Schiphol verso le 19:05, più di due ore prima, un margine comodo per consegnare i bagagli e passare i controlli. Il banco del check-in di solito chiude 40-60 minuti prima del volo (controlla la tua compagnia), quindi non partire dopo le 19:30.</div>
+        <div class="tappa-desc">Fermata a Leidseplein, bus 397 direzione Schiphol. Circa 35-40 min. <strong>Check-out:</strong> appoggia la carta sul lettore anche quando scendi, altrimenti l'addebito è più alto. <strong>Volo alle 21:20</strong>: partendo alle 18:30 arrivi a Schiphol verso le 19:05, più di due ore prima, un margine comodo per consegnare i bagagli e passare i controlli. Il banco del check-in di solito chiude 40-60 minuti prima del volo (controlla la tua compagnia), quindi non partire dopo le 19:30.</div>
         <div class="maps-row">
           <a class="btn-m btn-dark" href="https://maps.google.com/?q=Leidseplein+bus+stop+Amsterdam" target="_blank">📍 Fermata Leidseplein</a>
+          <a class="btn-m btn-yellow" href="#" data-bus="1">🕒 Orari bus</a>
         </div>
       </div>
     </div>
@@ -1493,6 +1494,15 @@ if ('serviceWorker' in navigator) {
 <div class="viewer" id="viewer">
   <div class="viewer-bar"><span id="viewer-title"></span><button class="t-btn small yellow" id="viewer-close">Chiudi</button></div>
   <img id="viewer-img" alt="">
+</div>
+<div class="viewer" id="bus-modal">
+  <div class="viewer-bar"><span>Bus 397 · Leidseplein → Schiphol</span><button class="t-btn small yellow" id="bus-close">Chiudi</button></div>
+  <div class="bus-body">
+    <p><b>Martedì 3 novembre</b>, dalle 17:30 alle 19:00 e poco oltre. Un bus ogni 7-8 minuti circa.</p>
+    <table class="bus-table"><thead><tr><th>Parte da Leidseplein</th><th>Arriva a Schiphol</th></tr></thead><tbody><tr><td>17:35</td><td>18:11</td></tr><tr><td>17:43</td><td>18:19</td></tr><tr><td>17:51</td><td>18:27</td></tr><tr><td>17:58</td><td>18:34</td></tr><tr><td>18:06</td><td>18:42</td></tr><tr><td>18:14</td><td>18:50</td></tr><tr><td>18:21</td><td>18:57</td></tr><tr class="bus-pick"><td>18:29</td><td>19:05</td></tr><tr><td>18:36</td><td>19:12</td></tr><tr><td>18:44</td><td>19:20</td></tr><tr><td>18:51</td><td>19:27</td></tr><tr><td>19:01</td><td>19:37</td></tr></tbody></table>
+    <p class="bus-note">La riga evidenziata è il bus che vi porta a Schiphol verso le 19:05, più di due ore prima del volo delle 21:20.</p>
+    <p class="bus-note">Orari previsti letti su Google Maps il 22/10/2026: controllali di nuovo il giorno stesso. Sali e scendi appoggiando la carta contactless sul lettore.</p>
+  </div>
 </div>
 <script src="data-osm.js"></script>
 <script src="itin-data.js"></script>

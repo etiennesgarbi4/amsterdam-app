@@ -599,6 +599,13 @@
     }));
   })();
 
+  // ── Orari del bus 397 (tappa di martedì) ──
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest('[data-bus]');
+    if (b) { e.preventDefault(); $('#bus-modal').classList.add('open'); }
+  });
+  $('#bus-close').addEventListener('click', () => $('#bus-modal').classList.remove('open'));
+
   // ── Torna al primo schermo quando si apre da un link con #strumenti ──
   if (location.hash === '#strumenti' && typeof showScreen === 'function') showScreen(6, false);
 })();

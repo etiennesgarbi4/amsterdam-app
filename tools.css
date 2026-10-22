@@ -127,3 +127,10 @@ button.place-body {
 .addr-row { display: flex; gap: 8px; align-items: stretch; }
 .addr-row .t-input { flex: 1 1 auto; min-width: 0; width: auto; }
 .addr-row .t-btn { flex: 0 0 auto; }
+
+.bus-body { flex: 1; min-height: 0; overflow: auto; background: #fff; color: #111; padding: 14px 16px 28px; font-size: 15px; line-height: 1.45; }
+.bus-table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 17px; font-variant-numeric: tabular-nums; }
+.bus-table th { text-align: left; font-size: 13px; padding: 8px 10px; border-bottom: 2px solid #111; }
+.bus-table td { padding: 9px 10px; border-bottom: 1px solid #ddd; }
+.bus-table tr.bus-pick td { background: #FFE3E3; font-weight: 700; }
+.bus-note { font-size: 13px; color: #444; margin: 8px 0; }
