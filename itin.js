@@ -220,10 +220,11 @@
     it: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>',
     ne: '<svg viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>',
     sp: '<svg viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8M12 17.5v-11"/></svg>',
+    pr: '<svg viewBox="0 0 24 24"><path d="M6 3h12v18l-6-4-6 4Z"/></svg>',
     al: '<svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/></svg>',
   };
   const nav = $('.bottom-nav');
-  nav.innerHTML = [['day', ICONS.it, 'Itinerario'], ['near', ICONS.ne, 'Vicino'], ['spese', ICONS.sp, 'Spese'], ['altro', ICONS.al, 'Altro']]
+  nav.innerHTML = [['day', ICONS.it, 'Itinerario'], ['near', ICONS.ne, 'Vicino'], ['spese', ICONS.sp, 'Spese'], ['pin', ICONS.pr, 'Da ricordare'], ['altro', ICONS.al, 'Altro']]
     .map((r) => '<button class="nav-btn" data-v="' + r[0] + '"><span class="nav-icon">' + r[1] + '</span><span class="nav-label">' + r[2] + '</span></button>').join('');
 
   let lastDay = todayIdx >= 0 ? todayIdx : 0;
@@ -239,7 +240,7 @@
     else if (view === 'altro') { screen = 's7'; navKey = 'altro'; }
     else if (view === 'crediti') { screen = 's8'; navKey = 'altro'; }
     else if (view === 'info') { screen = 's5'; navKey = 'altro'; }
-    else if (TOOLS.includes(view)) { screen = 's6'; navKey = view === 'near' || view === 'spese' ? view : 'altro'; }
+    else if (TOOLS.includes(view)) { screen = 's6'; navKey = view === 'near' || view === 'spese' || view === 'pin' ? view : 'altro'; }
     else return;
     show(screen);
     $$('.nav-btn').forEach((b) => b.classList.toggle('active', b.dataset.v === navKey));

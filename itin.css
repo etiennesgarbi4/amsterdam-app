@@ -93,7 +93,8 @@ body .st .tappa-desc { font-size: 13px; margin-top: 3px; }
 
 /* navigazione in basso a quattro voci */
 .nav-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-.nav-btn .nav-label { font-size: 11px; }
+.nav-btn .nav-label { font-size: 11px; white-space: nowrap; }
+@media (max-width: 350px) { .nav-btn .nav-label { font-size: 10px; } }
 
 /* schermata Altro e rientri */
 .menu-row {
