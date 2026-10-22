@@ -100,3 +100,19 @@
 .safe-item { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; line-height: 1.45; }
 .safe-item:last-child { border-bottom: 0; }
 .safe-item span:first-child { font-size: 18px; }
+
+/* luoghi con tendina */
+.place-wrap { border-bottom: 1px solid var(--border); }
+.place-wrap:last-child { border-bottom: 0; }
+.place-wrap .place { border-bottom: 0; }
+button.place-body {
+  background: none; border: 0; padding: 0; margin: 0; text-align: left; font: inherit; color: inherit; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.chev { display: inline-block; color: var(--accent); font-size: 12px; transition: transform .15s; }
+.place-wrap.open .chev { transform: rotate(180deg); }
+.place-more { padding: 0 0 12px 38px; }
+.place-more[hidden] { display: none; }
+.place-more p { margin: 0 0 6px; font-size: 13px; line-height: 1.5; color: var(--text2); }
+.place-more .pm-line b { color: var(--text); font-weight: 700; }
+.place-more .maps-row { margin-top: 8px; }

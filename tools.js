@@ -11,30 +11,30 @@
   const HOTEL = { name: 'Acostar Hotel', lat: 52.3653, lon: 4.8858, q: 'Acostar Hotel Kerkstraat 45 Amsterdam' };
 
   const FAMOUS = [
-    { n: 'Rijksmuseum', ic: '🖼️', lat: 52.3598, lon: 4.8850, t: 'Museo, Rembrandt e Vermeer' },
-    { n: 'Van Gogh Museum', ic: '🌻', lat: 52.3584, lon: 4.8811, t: 'Museo' },
-    { n: 'Moco Museum', ic: '🎨', lat: 52.3587, lon: 4.8820, t: 'Museo, Banksy e arte moderna' },
-    { n: 'Stedelijk Museum', ic: '🖼️', lat: 52.3579, lon: 4.8799, t: 'Arte moderna' },
-    { n: 'Casa di Anna Frank', ic: '🏠', lat: 52.3752, lon: 4.8841, t: 'Museo, serve prenotazione' },
-    { n: 'Dam e Palazzo Reale', ic: '🏛️', lat: 52.3731, lon: 4.8913, t: 'Piazza principale' },
-    { n: 'Vondelpark', ic: '🌳', lat: 52.3572, lon: 4.8641, t: 'Parco' },
-    { n: 'Bloemenmarkt', ic: '🌷', lat: 52.3669, lon: 4.8908, t: 'Mercato dei fiori' },
-    { n: 'Begijnhof', ic: '⛪', lat: 52.3694, lon: 4.8900, t: 'Cortile storico nascosto' },
-    { n: 'De 9 Straatjes', ic: '🛍️', lat: 52.3689, lon: 4.8850, t: 'Negozi e caffè' },
-    { n: 'Westerkerk e Jordaan', ic: '⛪', lat: 52.3745, lon: 4.8840, t: 'Quartiere e chiesa' },
-    { n: 'Leidseplein', ic: '🎭', lat: 52.3640, lon: 4.8828, t: 'Piazza, locali e teatri' },
-    { n: 'Rembrandtplein', ic: '🍻', lat: 52.3660, lon: 4.8966, t: 'Piazza, locali' },
-    { n: 'Heineken Experience', ic: '🍺', lat: 52.3578, lon: 4.8918, t: 'Visita alla fabbrica' },
-    { n: 'Albert Cuyp Market', ic: '🧇', lat: 52.3552, lon: 4.8918, t: 'Mercato di strada' },
-    { n: 'Magere Brug', ic: '🌉', lat: 52.3636, lon: 4.9024, t: 'Ponte sull\'Amstel' },
-    { n: 'Hortus Botanicus', ic: '🌿', lat: 52.3668, lon: 4.9078, t: 'Orto botanico' },
-    { n: 'Rembrandthuis', ic: '🖌️', lat: 52.3694, lon: 4.9013, t: 'Casa museo' },
-    { n: 'Nieuwmarkt', ic: '🏰', lat: 52.3726, lon: 4.9003, t: 'Piazza con la Waag' },
-    { n: 'Oude Kerk', ic: '⛪', lat: 52.3744, lon: 4.8981, t: 'Chiesa più antica' },
-    { n: 'De Wallen', ic: '🚦', lat: 52.3734, lon: 4.8983, t: 'Quartiere a Luci Rosse' },
-    { n: 'Amsterdam Centraal', ic: '🚉', lat: 52.3789, lon: 4.9006, t: 'Stazione e traghetti per il Nord' },
-    { n: 'NEMO Science Museum', ic: '🔬', lat: 52.3739, lon: 4.9121, t: 'Museo, terrazza panoramica' },
-    { n: "A'DAM Lookout", ic: '🎡', lat: 52.3838, lon: 4.9021, t: 'Panorama e altalena' },
+    { n: 'Rijksmuseum', ic: '🖼️', lat: 52.3598, lon: 4.8850, t: 'Museo, Rembrandt e Vermeer', d: 'Il museo nazionale dei Paesi Bassi, con La ronda di notte di Rembrandt e La lattaia di Vermeer. Raccoglie i capolavori del Secolo d\'oro olandese.', c: 'circa €25, biglietto online a orario fisso; gratis sotto i 18 anni.' },
+    { n: 'Van Gogh Museum', ic: '🌻', lat: 52.3584, lon: 4.8811, t: 'Museo', d: 'La più grande collezione al mondo di opere di Van Gogh, dai Mangiatori di patate ai Girasoli, con le sue lettere e i quadri degli amici.', c: '€25. Nel tuo itinerario hai già lo slot di sabato alle 10:00.' },
+    { n: 'Moco Museum', ic: '🎨', lat: 52.3587, lon: 4.8820, t: 'Museo, Banksy e arte moderna', d: 'Piccolo museo di arte moderna e contemporanea. Ci sono Banksy, Warhol, Basquiat e Kusama, e si visita in circa un\'ora e mezza.', c: 'circa €18-23 a seconda del giorno e dell\'orario. Hai già lo slot di sabato alle 14:00.' },
+    { n: 'Stedelijk Museum', ic: '🖼️', lat: 52.3579, lon: 4.8799, t: 'Arte moderna', d: 'Il museo di arte moderna e design della città, con opere di Mondrian, Kandinsky e Warhol. L\'ala nuova ha la forma di una grande vasca da bagno.', c: '€22,50 per gli adulti; gratis sotto i 19 anni, ma serve comunque il biglietto.' },
+    { n: 'Casa di Anna Frank', ic: '🏠', lat: 52.3752, lon: 4.8841, t: 'Museo, serve prenotazione', d: 'Il nascondiglio dove la famiglia Frank visse per più di due anni durante l\'occupazione nazista e dove Anna scrisse il diario. Si visita in silenzio, in circa un\'ora.', c: 'circa €16,50, solo online: i biglietti finiscono con settimane di anticipo.' },
+    { n: 'Dam e Palazzo Reale', ic: '🏛️', lat: 52.3731, lon: 4.8913, t: 'Piazza principale', d: 'La piazza centrale della città, con il Palazzo Reale e il Monumento Nazionale. È il punto di partenza naturale per girare il centro.', c: 'Piazza gratuita; il Palazzo Reale si visita a pagamento quando è aperto.' },
+    { n: 'Vondelpark', ic: '🌳', lat: 52.3572, lon: 4.8641, t: 'Parco', d: 'Il parco più grande della città, ideale per una pausa a piedi o in bici. Al centro c\'è il Blauwe Theehuis, un padiglione rotondo con bar.', c: 'Gratuito.' },
+    { n: 'Bloemenmarkt', ic: '🌷', lat: 52.3669, lon: 4.8908, t: 'Mercato dei fiori', d: 'L\'unico mercato dei fiori galleggiante al mondo, con bancarelle su chiatte lungo il Singel. Si trovano bulbi di tulipano e souvenir.', c: 'Ingresso libero: paghi solo quello che compri.' },
+    { n: 'Begijnhof', ic: '⛪', lat: 52.3694, lon: 4.8900, t: 'Cortile storico nascosto', d: 'Un cortile del Seicento nascosto dietro un portone in pieno centro. Silenzio assoluto, casette medievali e una piccola chiesa.', c: 'Gratuito. Entra senza fare rumore: ci vivono delle persone.' },
+    { n: 'De 9 Straatjes', ic: '🛍️', lat: 52.3689, lon: 4.8850, t: 'Negozi e caffè', d: 'Nove vie trasversali tra i canali con negozi indipendenti, vintage e caffè. Si gira bene a piedi, senza una meta.', c: 'Gratuito: paghi solo se compri.' },
+    { n: 'Westerkerk e Jordaan', ic: '⛪', lat: 52.3745, lon: 4.8840, t: 'Quartiere e chiesa', d: 'La chiesa con la torre più alta della città, accanto alla Casa di Anna Frank. Intorno c\'è il Jordaan, con canali stretti, botteghe e cortili.', c: 'Passeggiata gratuita. La salita alla torre di solito è a pagamento e stagionale: verifica sul posto.' },
+    { n: 'Leidseplein', ic: '🎭', lat: 52.3640, lon: 4.8828, t: 'Piazza, locali e teatri', d: 'Piazza animata con teatri, locali e ristoranti. Ci passano i tram e la sera è piena di gente.', c: 'Gratuito.' },
+    { n: 'Rembrandtplein', ic: '🍻', lat: 52.3660, lon: 4.8966, t: 'Piazza, locali', d: 'Piazza con terrazze e locali, e con le sculture in bronzo de La ronda di notte. È uno dei centri della vita serale.', c: 'Gratuito.' },
+    { n: 'Heineken Experience', ic: '🍺', lat: 52.3578, lon: 4.8918, t: 'Visita alla fabbrica', d: 'L\'ex birrificio, con un percorso interattivo sulla storia e la produzione della birra che finisce con la degustazione. Dura circa un\'ora e mezza.', c: '€23, con due birre incluse. Venerdì 30 hai già lo slot.' },
+    { n: 'Albert Cuyp Market', ic: '🧇', lat: 52.3552, lon: 4.8918, t: 'Mercato di strada', d: 'Il mercato di strada più grande d\'Olanda, nel quartiere De Pijp. Si mangia camminando: stroopwafel, aringa, formaggi, patatine.', c: 'Ingresso libero: paghi solo quello che mangi o compri. Chiuso la domenica.' },
+    { n: 'Magere Brug', ic: '🌉', lat: 52.3636, lon: 4.9024, t: 'Ponte sull\'Amstel', d: 'Il ponte levatoio di legno sull\'Amstel, il più famoso della città. La sera è illuminato da centinaia di lampadine.', c: 'Gratuito.' },
+    { n: 'Hortus Botanicus', ic: '🌿', lat: 52.3668, lon: 4.9078, t: 'Orto botanico', d: 'Uno dei più antichi orti botanici del mondo, fondato nel 1638. Ha una serra tropicale e piante da tutto il pianeta.', c: 'circa €14-15; si paga solo con carta.' },
+    { n: 'Rembrandthuis', ic: '🖌️', lat: 52.3694, lon: 4.9013, t: 'Casa museo', d: 'La casa dove Rembrandt visse e lavorò per circa vent\'anni. È arredata come ai suoi tempi, con dimostrazioni di incisione.', c: 'circa €19,50, con prenotazione a orario (prezzo da confermare).' },
+    { n: 'Nieuwmarkt', ic: '🏰', lat: 52.3726, lon: 4.9003, t: 'Piazza con la Waag', d: 'Piazza con la Waag, un edificio del 1488 che era una porta delle mura. Oggi ci sono caffè e, in certi giorni, un mercato.', c: 'Gratuito.' },
+    { n: 'Oude Kerk', ic: '⛪', lat: 52.3744, lon: 4.8981, t: 'Chiesa più antica', d: 'La chiesa più antica della città, del 1306, in mezzo al quartiere a luci rosse. Dentro ci sono vetrate, la tomba di Saskia (moglie di Rembrandt) e mostre d\'arte.', c: 'circa €14-14,50; con la torre circa €22 (la torre si visita da aprile a ottobre).' },
+    { n: 'De Wallen', ic: '🚦', lat: 52.3734, lon: 4.8983, t: 'Quartiere a Luci Rosse', d: 'Il centro più antico della città e il quartiere a luci rosse, con vicoli, canali e coffee shop. Di giorno è tranquillo, la sera molto affollato.', c: 'Gratuito. Vietato fotografare le vetrine.' },
+    { n: 'Amsterdam Centraal', ic: '🚉', lat: 52.3789, lon: 4.9006, t: 'Stazione e traghetti per il Nord', d: 'La stazione principale, in mattoni neogotici. Da qui partono i treni per Schiphol e i traghetti gratuiti per Amsterdam Nord.', c: 'Stazione e traghetto gratuiti; il treno si paga a parte.' },
+    { n: 'NEMO Science Museum', ic: '🔬', lat: 52.3739, lon: 4.9121, t: 'Museo, terrazza panoramica', d: 'Museo della scienza con esperimenti da toccare, in un edificio a forma di nave. Sul tetto c\'è una grande terrazza con vista sul porto.', c: 'circa €21,50; la terrazza sul tetto dovrebbe essere gratuita (da verificare).' },
+    { n: "A'DAM Lookout", ic: '🎡', lat: 52.3838, lon: 4.9021, t: 'Panorama e altalena', d: 'La torre con la vista a 360° sulla città, ad Amsterdam Nord, raggiungibile con il traghetto gratuito. C\'è anche l\'altalena Over The Edge a 100 metri.', c: 'Il tuo biglietto è già preso: €28 con drink e VR Rollercoaster. L\'altalena costa extra.' },
   ];
 
   const CATS = {
@@ -88,28 +88,63 @@
     $$('.chip', box).forEach((c) => c.addEventListener('click', () => { nearCat = c.dataset.c; renderChips(); loadNear(); }));
   }
 
+  const gsearch = (q) => 'https://www.google.com/search?q=' + encodeURIComponent(q);
+
+  // Riga di un luogo; se ha dettagli (descrizione, costo, menù) si apre con un tocco
   function placeRow(p) {
-    return '<div class="place"><div class="place-ic">' + p.ic + '</div><div class="place-body"><div class="place-name">' + esc(p.n) +
-      '</div><div class="place-sub">' + esc(p.t || '') + '</div></div><div class="place-dist">' + fmtDist(p.d) +
-      '</div><a class="btn-m btn-outline" href="' + mapsPlace(p.lat, p.lon, p.q) + '" target="_blank">Maps</a></div>';
+    const more = [];
+    if (p.d) more.push('<p>' + esc(p.d) + '</p>');
+    if (p.kind) more.push('<p class="pm-line"><b>Tipo:</b> ' + esc(p.kind) + '</p>');
+    if (p.cuisine) more.push('<p class="pm-line"><b>Cucina:</b> ' + esc(p.cuisine) + '</p>');
+    if (p.c) more.push('<p class="pm-line"><b>Costo:</b> ' + esc(p.c) + '</p>');
+    if (p.hours) more.push('<p class="pm-line"><b>Orari:</b> ' + esc(p.hours) + '</p>');
+    const btns = [];
+    if (p.menu) btns.push('<a class="btn-m btn-yellow" href="' + gsearch(p.n + ' Amsterdam menu') + '" target="_blank">Menù su Google</a>');
+    if (p.web) btns.push('<a class="btn-m btn-yellow" href="' + esc(p.web) + '" target="_blank">Sito ufficiale</a>');
+    if (p.info) btns.push('<a class="btn-m btn-outline" href="' + gsearch(p.n + ' Amsterdam') + '" target="_blank">Cos\'è? Cerca su Google</a>');
+    if (btns.length) more.push('<div class="maps-row">' + btns.join('') + '</div>');
+    const has = more.length > 0;
+    return '<div class="place-wrap"><div class="place"><div class="place-ic">' + p.ic + '</div>' +
+      (has ? '<button class="place-body" aria-expanded="false">' : '<div class="place-body">') +
+      '<div class="place-name">' + esc(p.n) + (has ? ' <span class="chev" aria-hidden="true">▾</span>' : '') + '</div><div class="place-sub">' + esc(p.t || '') + '</div>' +
+      (has ? '</button>' : '</div>') +
+      '<div class="place-dist">' + fmtDist(p.d0) + '</div><a class="btn-m btn-outline" href="' + mapsPlace(p.lat, p.lon, p.q) + '" target="_blank">Maps</a></div>' +
+      (has ? '<div class="place-more" hidden>' + more.join('') + '</div>' : '') + '</div>';
+  }
+  function bindRows(box) {
+    $$('button.place-body', box).forEach((b) => b.addEventListener('click', () => {
+      const wrap = b.closest('.place-wrap'), more = wrap.querySelector('.place-more');
+      const open = more.hidden;
+      more.hidden = !open;
+      b.setAttribute('aria-expanded', open ? 'true' : 'false');
+      wrap.classList.toggle('open', open);
+    }));
   }
 
   async function loadNear() {
     const out = $('#near-out');
     if (!pos) { out.innerHTML = '<div class="t-note">Premi "Usa la mia posizione" oppure "Parti dall\'hotel".</div>'; return; }
     if (nearCat === 'famosi') {
-      const list = FAMOUS.map((p) => Object.assign({}, p, { d: distM(pos, p), q: p.n + ' Amsterdam' })).sort((a, b) => a.d - b.d);
-      out.innerHTML = list.map(placeRow).join('');
+      const list = FAMOUS.map((p) => Object.assign({}, p, { d0: distM(pos, p), q: p.n + ' Amsterdam' })).sort((a, b) => a.d0 - b.d0);
+      out.innerHTML = '<div class="t-note small" style="margin-bottom:6px">Tocca un luogo per leggere cos\'è e quanto costa. I prezzi sono indicativi: controlla sempre il sito prima di andare.</div>' + list.map(placeRow).join('');
+      bindRows(out);
       return;
     }
     const cat = CATS[nearCat];
     const rows = (window.AMS_OSM && window.AMS_OSM[nearCat]) || [];
     const label = cat.l.replace(/^\S+\s/, '');
-    const list = rows.map((r) => ({ n: r[0] || label, lat: r[1], lon: r[2], ic: cat.ic, t: r[3] ? 'Orari: ' + r[3] : (r[0] ? '' : 'senza nome'), d: distM(pos, { lat: r[1], lon: r[2] }) }))
-      .filter((p) => p.d <= cat.r).sort((a, b) => a.d - b.d).slice(0, 30);
+    const food = nearCat === 'cibo' || nearCat === 'bar', visit = nearCat === 'visita';
+    const list = rows.map((r) => ({
+      n: r[0] || label, lat: r[1], lon: r[2], ic: cat.ic, t: (visit && r[4]) ? r[4] : (r[0] ? '' : 'senza nome'),
+      hours: r[3] || '', cuisine: food ? (r[4] || '') : '', kind: visit ? (r[4] || '') : '',
+      c: visit ? (r[5] || 'non indicato nei dati, controlla il sito') : '',
+      menu: food && !!r[0], web: visit ? (r[6] || '') : '', info: visit && !!r[0],
+      d0: distM(pos, { lat: r[1], lon: r[2] }),
+    })).filter((p) => p.d0 <= cat.r).sort((a, b) => a.d0 - b.d0).slice(0, 30);
     out.innerHTML = list.length
-      ? list.map(placeRow).join('')
+      ? (visit ? '<div class="t-note small" style="margin-bottom:6px">Tocca un luogo per i dettagli. Il costo è quello indicato su OpenStreetMap, quando c\'è.</div>' : '') + list.map(placeRow).join('')
       : '<div class="t-note">Niente di segnato nel raggio di ' + cat.r + ' m. Il catalogo copre il centro di Amsterdam: se sei più lontano, prova con "Più famosi".</div>';
+    bindRows(out);
   }
 
   function setPos(p, label) {
