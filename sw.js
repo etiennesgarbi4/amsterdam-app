@@ -1,6 +1,6 @@
 // Cache per l'uso offline. Cambiare VERSION a ogni modifica dei file.
-const VERSION = 'amsterdam-v44';
-const CORE = ['./', 'index.html', 'tools.css', 'itin.css', 'itin.js', 'itin-data.js', 'tools.js', 'data-osm.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'img/vangogh.webp', 'img/moco.webp', 'img/heineken.webp', 'img/adam.webp', 'img/rembrandtplein.webp', 'img/vondelpark.webp', 'img/bloemenmarkt.webp', 'img/dam.webp', 'img/begijnhof.webp', 'img/magerebrug.webp', 'img/oudekerk.webp', 'img/albertcuyp.webp', 'img/centraal.webp', 'img/brouwerij.webp', 'img/waterlooplein.webp', 'img/jordaan.webp', 'img/redlight.webp'];
+const VERSION = 'amsterdam-v45';
+const CORE = ['./', 'index.html', 'tools.css', 'itin.css', 'itin.js', 'itin-data.js', 'tools.js', 'data-osm.js', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'icon-maskable-512.png', 'apple-touch-icon.png', 'img/vangogh.webp', 'img/moco.webp', 'img/heineken.webp', 'img/adam.webp', 'img/rembrandtplein.webp', 'img/vondelpark.webp', 'img/bloemenmarkt.webp', 'img/dam.webp', 'img/begijnhof.webp', 'img/magerebrug.webp', 'img/oudekerk.webp', 'img/albertcuyp.webp', 'img/centraal.webp', 'img/brouwerij.webp', 'img/waterlooplein.webp', 'img/jordaan.webp', 'img/acostar.webp', 'img/boerejongens.webp', 'img/redlight.webp'];
 
 // Alla prima installazione i file si scaricano sempre dalla rete (cache: 'reload'), mai dalla memoria temporanea del browser
 self.addEventListener('install', (e) => {
