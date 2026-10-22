@@ -90,12 +90,63 @@
   // ── Vicino a me ──
   let pos = null;
   let nearCat = 'famosi';
+  let nearToken = 0;
 
   function renderChips() {
     const box = $('#near-chips');
     box.innerHTML = '<button class="chip' + (nearCat === 'famosi' ? ' active' : '') + '" data-c="famosi">⭐ Più famosi</button>' +
       Object.keys(CATS).map((k) => '<button class="chip' + (nearCat === k ? ' active' : '') + '" data-c="' + k + '">' + CATS[k].l + '</button>').join('');
     $$('.chip', box).forEach((c) => c.addEventListener('click', () => { nearCat = c.dataset.c; renderChips(); loadNear(); }));
+  }
+
+  // Copertura dei dati salvati (Amsterdam e Schiphol); fuori da qui si cerca in diretta
+  const COVER = { S: 52.28, N: 52.43, W: 4.72, E: 5.03 };
+  const inCover = (p) => p.lat >= COVER.S && p.lat <= COVER.N && p.lon >= COVER.W && p.lon <= COVER.E;
+  const OVERPASS = ['https://overpass.openstreetmap.fr/api/interpreter', 'https://z.overpass-api.de/api/interpreter', 'https://overpass-api.de/api/interpreter'];
+  const NAMED = ['cibo', 'bar', 'stop', 'visita'];
+  const CUISINE = { italian: 'italiana', pizza: 'pizza', burger: 'hamburger', sandwich: 'panini', indian: 'indiana', japanese: 'giapponese', chinese: 'cinese', asian: 'asiatica', french: 'francese', indonesian: 'indonesiana', thai: 'thailandese', sushi: 'sushi', kebab: 'kebab', mexican: 'messicana', turkish: 'turca', friture: 'patatine e fritti', breakfast: 'colazioni', regional: 'locale', international: 'internazionale', ramen: 'ramen', steak_house: 'carne alla griglia', bubble_tea: 'bubble tea', mediterranean: 'mediterranea', argentinian: 'argentina', spanish: 'spagnola', korean: 'coreana', seafood: 'pesce', fish: 'pesce', surinamese: 'surinamese', dutch: 'olandese', greek: 'greca', american: 'americana', vietnamese: 'vietnamita', lebanese: 'libanese', ethiopian: 'etiope', vegetarian: 'vegetariana', vegan: 'vegana', tapas: 'tapas', irish: 'irlandese', belgian: 'belga', barbecue: 'barbecue', chicken: 'pollo', coffee_shop: 'caffetteria', cake: 'dolci', ice_cream: 'gelato', pancake: 'pancake', pasta: 'pasta', dessert: 'dolci', bakery: 'forno', portuguese: 'portoghese', moroccan: 'marocchina', persian: 'persiana', georgian: 'georgiana', german: 'tedesca', peruvian: 'peruviana', brazilian: 'brasiliana', caribbean: 'caraibica', middle_eastern: 'mediorientale', falafel: 'falafel', poke: 'poke', salad: 'insalate', juice: 'succhi', tea: 'tè', coffee: 'caffè' };
+  const TYPE = { attraction: 'attrazione', museum: 'museo', gallery: "galleria d'arte", viewpoint: 'punto panoramico' };
+  const cleanWeb = (w) => (w || '').replace(/^https?:\/\//, '').replace(/^www\./, '').replace(/\/$/, '');
+  const hrefWeb = (w) => (/^https?:/.test(w) ? w : 'https://' + w);
+
+  // Riga con la stessa forma dei dati salvati: [nome, lat, lon, orari, cucina o tipo, costo, sito, indirizzo]
+  function rowFromTags(k, t, lat, lon) {
+    const name = t.name || t['name:en'] || '';
+    let x = '', fee = '';
+    if (k === 'cibo' || k === 'bar') x = (t.cuisine || '').split(/[;,]/).map((c) => CUISINE[c.trim()]).filter(Boolean).slice(0, 2).join(', ');
+    if (k === 'visita') {
+      x = t.amenity === 'marketplace' ? 'mercato' : (TYPE[t.tourism] || '');
+      if (t.fee === 'no') fee = 'ingresso gratuito'; else if (t.fee === 'yes') fee = 'a pagamento' + (t.charge ? ' (' + t.charge + ')' : '');
+    }
+    return [name, lat, lon, t.opening_hours || '', x, fee, cleanWeb(t.website || t['contact:website']), ((t['addr:street'] || '') + ' ' + (t['addr:housenumber'] || '')).trim()];
+  }
+
+  // Interroga insieme i server di OpenStreetMap e prende la prima risposta valida (massimo 15 secondi)
+  function liveRows(k, p) {
+    const cat = CATS[k], around = '(around:' + cat.r + ',' + p.lat + ',' + p.lon + ')', nm = NAMED.includes(k) ? '["name"]' : '';
+    const q = '[out:json][timeout:25];(' + cat.f.map((f) => 'nwr' + around + f + nm + ';').join('') + ');out center 150;';
+    const ctl = new AbortController(), timer = setTimeout(() => ctl.abort(), 15000);
+    return Promise.any(OVERPASS.map((u) => fetch(u, { method: 'POST', body: 'data=' + encodeURIComponent(q), signal: ctl.signal })
+      .then((r) => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })))
+      .then((d) => {
+        clearTimeout(timer); ctl.abort();
+        return d.elements.map((e) => {
+          const lat = e.lat != null ? e.lat : e.center && e.center.lat, lon = e.lon != null ? e.lon : e.center && e.center.lon;
+          return lat == null ? null : rowFromTags(k, e.tags || {}, lat, lon);
+        }).filter(Boolean);
+      })
+      .catch((e) => { clearTimeout(timer); throw e; });
+  }
+
+  function buildList(k, rows) {
+    const cat = CATS[k], food = k === 'cibo' || k === 'bar', visit = k === 'visita', label = cat.l.replace(/^\S+\s/, '');
+    return rows.map((r) => ({
+      n: r[0] || label, lat: r[1], lon: r[2], ic: cat.ic, t: (visit && r[4]) ? r[4] : (r[0] ? '' : 'senza nome'),
+      hours: r[3] || '', cuisine: food ? (r[4] || '') : '', kind: visit ? (r[4] || '') : '',
+      c: visit ? (r[5] || 'non indicato nei dati, controlla il sito') : '',
+      addr: r[7] || '', web: r[6] ? hrefWeb(r[6]) : '', menu: food && !!r[0], info: visit && !!r[0],
+      d0: distM(pos, { lat: r[1], lon: r[2] }),
+    })).filter((p) => p.d0 <= cat.r).sort((a, b) => a.d0 - b.d0).slice(0, 30);
   }
 
   const gsearch = (q) => 'https://www.google.com/search?q=' + encodeURIComponent(q);
@@ -109,10 +160,11 @@
     if (p.kind) more.push('<p class="pm-line"><b>Tipo:</b> ' + esc(p.kind) + '</p>');
     if (p.cuisine) more.push('<p class="pm-line"><b>Cucina:</b> ' + esc(p.cuisine) + '</p>');
     if (p.c) more.push('<p class="pm-line"><b>Costo:</b> ' + esc(p.c) + '</p>');
+    if (p.addr) more.push('<p class="pm-line"><b>Indirizzo:</b> ' + esc(p.addr) + '</p>');
     if (p.hours) more.push('<p class="pm-line"><b>Orari:</b> ' + esc(p.hours) + '</p>');
     const btns = [];
     if (p.menu) btns.push('<a class="btn-m btn-yellow" href="' + gsearch(p.n + ' Amsterdam menu') + '" target="_blank">Menù su Google</a>');
-    if (p.web) btns.push('<a class="btn-m btn-yellow" href="' + esc(p.web) + '" target="_blank">Sito ufficiale</a>');
+    if (p.web) btns.push('<a class="btn-m btn-yellow" href="' + esc(p.web) + '" target="_blank">Sito</a>');
     days.forEach((i) => btns.push('<a class="btn-m btn-yellow" href="#" data-day="' + i + '">Apri ' + DAY_SHORT[i] + '</a>'));
     if (p.info) btns.push('<a class="btn-m btn-outline" href="' + gsearch(p.n + ' Amsterdam') + '" target="_blank">Cos\'è? Cerca su Google</a>');
     if (btns.length) more.push('<div class="maps-row">' + btns.join('') + '</div>');
@@ -145,21 +197,31 @@
       bindRows(out);
       return;
     }
-    const cat = CATS[nearCat];
-    const rows = (window.AMS_OSM && window.AMS_OSM[nearCat]) || [];
-    const label = cat.l.replace(/^\S+\s/, '');
-    const food = nearCat === 'cibo' || nearCat === 'bar', visit = nearCat === 'visita';
-    const list = rows.map((r) => ({
-      n: r[0] || label, lat: r[1], lon: r[2], ic: cat.ic, t: (visit && r[4]) ? r[4] : (r[0] ? '' : 'senza nome'),
-      hours: r[3] || '', cuisine: food ? (r[4] || '') : '', kind: visit ? (r[4] || '') : '',
-      c: visit ? (r[5] || 'non indicato nei dati, controlla il sito') : '',
-      menu: food && !!r[0], web: visit ? (r[6] || '') : '', info: visit && !!r[0],
-      d0: distM(pos, { lat: r[1], lon: r[2] }),
-    })).filter((p) => p.d0 <= cat.r).sort((a, b) => a.d0 - b.d0).slice(0, 30);
-    out.innerHTML = list.length
-      ? (visit ? '<div class="t-note small" style="margin-bottom:6px">Tocca un luogo per i dettagli. Il costo è quello indicato su OpenStreetMap, quando c\'è.</div>' : '') + list.map(placeRow).join('')
-      : '<div class="t-note">Niente di segnato nel raggio di ' + cat.r + ' m. Il catalogo copre il centro di Amsterdam: se sei più lontano, prova con "Più famosi".</div>';
-    bindRows(out);
+    const k = nearCat, cat = CATS[k], visit = k === 'visita', token = ++nearToken;
+    const saved = (window.AMS_OSM && window.AMS_OSM[k]) || [];
+    const hint = visit ? '<div class="t-note small" style="margin-bottom:6px">Tocca un luogo per i dettagli. Il costo è quello indicato su OpenStreetMap, quando c\'è.</div>' : '';
+    const draw = (rows, source, warn) => {
+      if (token !== nearToken) return;
+      const list = buildList(k, rows);
+      out.innerHTML = '<div class="src-line"><span>' + source + '</span><button class="t-btn small ghost" id="near-live">Aggiorna in diretta</button></div>' +
+        (warn ? '<div class="t-note small" style="margin-bottom:6px">' + warn + '</div>' : '') + hint +
+        (list.length ? list.map(placeRow).join('') : '<div class="t-note">Niente di segnato nel raggio di ' + cat.r + ' m. Prova con "Più famosi" o con "Aggiorna in diretta".</div>');
+      bindRows(out);
+      $('#near-live').addEventListener('click', () => runLive(false));
+    };
+    const runLive = async (auto) => {
+      out.innerHTML = '<div class="t-note">' + (auto ? 'Sei fuori dall\'area salvata: ' : '') + 'cerco in diretta nel raggio di ' + cat.r + ' m…</div>';
+      try {
+        const rows = await liveRows(k, pos);
+        draw(rows, 'Dati in diretta, letti adesso');
+      } catch (e) {
+        if (token !== nearToken) return;
+        if (auto) out.innerHTML = '<div class="t-note">Sei fuori dall\'area salvata e il servizio in diretta non risponde. Controlla la rete e riprova tra poco; "Più famosi" funziona sempre.</div><div class="t-gap"><button class="t-btn small ghost" id="near-live">Riprova</button></div>';
+        else draw(saved, 'Dati salvati', 'Il servizio in diretta non risponde: restano i dati salvati.');
+        const b = $('#near-live'); if (auto && b) b.addEventListener('click', () => runLive(true));
+      }
+    };
+    if (inCover(pos)) draw(saved, 'Dati salvati il 22 ott, funzionano anche senza rete'); else runLive(true);
   }
 
   function setPos(p, label) {
