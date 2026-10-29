@@ -502,7 +502,7 @@
     });
   }
   // attività a cui si può collegare un biglietto: il nome è lo stesso della tappa
-  const DOC_STOPS = ['Heineken Experience', 'Van Gogh Museum', 'Moco Museum', 'SmokeBoat', "A'DAM Lookout", 'Volo', 'Hotel Acostar'];
+  const DOC_STOPS = ['Heineken Experience', 'Van Gogh Museum', 'Moco Museum', 'SmokeBoat', "A'DAM Lookout", 'Rembrandt Corner', 'Volo', 'Hotel Acostar'];
   let docFilter = '', docsCache = [];
   (function () { const sel = $('#doc-stop'); if (sel) sel.innerHTML = '<option value="">Altro (passaporto, assicurazione...)</option>' + DOC_STOPS.map((x) => '<option>' + esc(x) + '</option>').join(''); })();
   const blobOf = (d) => d.blob || new Blob([d.data], { type: d.type });
